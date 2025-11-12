@@ -2,7 +2,10 @@ import sys
 import pyvisa
 import time
 import numpy as np
+import matplotlib as mpl
+mpl.use('TkAgg')
 import matplotlib.pyplot as plt
+plt.ion() # Turn on interactive mode for non-blocking plots
 
 def read_trace_find_max(sa):
     # Query the instrument for the trace data
@@ -35,10 +38,6 @@ def read_trace_find_max(sa):
     return f, y
 
 if __name__ == "__main__":
-    import matplotlib
-    matplotlib.use('TkAgg')
-    plt.ion()
-
     # Connect to the instrument
     try:
         rm      = pyvisa.ResourceManager('@py')
@@ -100,5 +99,3 @@ if __name__ == "__main__":
     # Close the connection
     sa.close()
     rm.close()
-
-        

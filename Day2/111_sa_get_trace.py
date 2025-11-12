@@ -1,13 +1,12 @@
 import pyvisa
 import numpy as np
+import matplotlib as mlp
+mlp.use('TkAgg')
 import matplotlib.pyplot as plt
 import time
 
 if __name__ == '__main__':
-    # TkAgg is the backend for matplotlib
-    import matplotlib
-    matplotlib.use('TkAgg')
-    plt.ion()
+    plt.ion() # Runs only from Python console
 
     print("Results")
     print("-------")

@@ -1,5 +1,5 @@
-import matplotlib
-matplotlib.use('TkAgg')
+import matplotlib as mpl
+mpl.use('TkAgg')
 import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
@@ -8,12 +8,12 @@ if __name__ == "__main__":
     x = [1, 2, 3, 4, 5]
     y = [1, 4, 9, 16, 25]
 
+    plt.ion()  # Turn on interactive mode (Console!)
     # Create figure and axis
     fig, ax = plt.subplots()
 
     # Plot data
     ax.plot(x, y)
-
     # Show the plot
     plt.show()
 
