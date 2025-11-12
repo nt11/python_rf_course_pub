@@ -6,10 +6,8 @@ from    PyQt6.uic          import loadUi
 
 import numpy as np
 
-from python_rf_course.utils.pyqt2python     import h_gui
-from python_rf_course.utils.plot_widget     import PlotWidget
-from python_rf_course.utils.logging_widget  import setup_logger
-from python_rf_course.utils.SCPI_wrapper    import *
+from python_rf_course_utils.qt import h_gui, PlotWidget, setup_logger
+from python_rf_course_utils.scpi import wrapper
 
 #EX5_1: Import the thread class form the ex5_long_process_skeleton_lite.py file
 #

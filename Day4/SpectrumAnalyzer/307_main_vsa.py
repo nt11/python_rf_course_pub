@@ -10,8 +10,7 @@ from time               import sleep
 
 import numpy as np
 
-from utils.pyqt2python import h_gui
-from utils.plot_widget import PlotWidget
+from python_rf_course_utils.qt import h_gui, PlotWidget
 
 from o310_long_process import LongProcess
 

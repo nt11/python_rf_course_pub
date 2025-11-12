@@ -14,9 +14,7 @@ from    time               import sleep
 import numpy as np
 import logging # for pyinstaller
 
-from python_rf_course.utils.pyqt2python     import h_gui
-from python_rf_course.utils.plot_widget     import PlotWidget
-from python_rf_course.utils.logging_widget  import setup_logger
+from python_rf_course_utils.qt import h_gui, PlotWidget, setup_logger
 
 from o310_long_process import LongProcess
 

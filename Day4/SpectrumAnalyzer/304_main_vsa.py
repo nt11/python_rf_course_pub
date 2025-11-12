@@ -9,8 +9,7 @@ from PyQt6.QtCore       import QTimer
 
 import numpy as np
 
-from utils.pyqt2python import h_gui
-from utils.plot_widget import PlotWidget
+from python_rf_course_utils.qt import h_gui, PlotWidget
 
 
 def is_valid_ip(ip:str) -> bool:

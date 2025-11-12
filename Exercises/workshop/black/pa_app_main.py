@@ -1,11 +1,9 @@
 # WSR_1 Import everything you need
 #
 
-from python_rf_course.utils.pyqt2python     import h_gui
-from python_rf_course.utils.plot_widget     import PlotWidget
-from python_rf_course.utils.logging_widget  import setup_logger
-from python_rf_course.utils.SCPI_wrapper    import *
-from python_rf_course.utils.multitone       import multitone
+from python_rf_course_utils.qt import h_gui, PlotWidget, setup_logger
+from python_rf_course_utils.scpi import wrapper
+from python_rf_course_utils.arb import multitone
 
 # WSR_2 Import the worker thread class
 #

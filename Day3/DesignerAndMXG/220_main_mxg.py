@@ -10,8 +10,8 @@ import yaml
 from PyQt6.QtWidgets import QApplication, QMainWindow
 from PyQt6.uic import loadUi
 
-from   python_rf_course.utils.pyqt2python import h_gui
-from   python_rf_course.utils.multitone import multitone
+from python_rf_course_utils.qt import h_gui
+from python_rf_course_utils.arb import multitone
 
 def is_valid_ip(ip:str) -> bool:
     # Regular expression pattern for matching IP address
