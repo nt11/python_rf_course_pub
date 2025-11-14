@@ -76,11 +76,11 @@ if __name__ == "__main__":
         sys.exit(1)
 
 
-    # Set the spectrum analyzer to maximal span
-    sa.write("sense:FREQuency:SPAN:FULL")
     # Reset and clear all status (errors) of the spectrum analyzer
     sa.write("*RST")
     sa.write("*CLS")
+    # Set the spectrum analyzer to maximal span
+    sa.write("sense:FREQuency:SPAN:FULL")
     # Set auto resolution bandwidth
     sa.write("sense:BANDwidth:RESolution:AUTO ON")
     # Set the trace to max hold

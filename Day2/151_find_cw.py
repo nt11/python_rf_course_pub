@@ -54,7 +54,7 @@ if __name__ == "__main__":
     f, p = read_max_peak(sa)
 
     # Set the refrence level to the maximum
-    max_level = np.ceil(np.max(p) / 5 + 1) * 5
+    max_level = np.ceil(p / 5 + 1) * 5
     sa.write(f"DISP:WIND:TRAC:Y:RLEV {max_level}")
 
     # Find the center frequency
@@ -66,10 +66,8 @@ if __name__ == "__main__":
         sa.write(f"sense:FREQuency:CENTer {Fc} MHz")
         sa.write(f"sense:FREQuency:SPAN {span} MHz")
         time.sleep(2)
-        f, p = read_max_peak(sa)
+        Fc, p = read_max_peak(sa)
 
-        ii = np.argmax(p)
-        Fc = f
         print(f'Center Frequency: {Fc} MHz, Span: {span} MHz, Peak: {p} dBm')
 
     # print the last RBW
