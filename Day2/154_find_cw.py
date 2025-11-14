@@ -51,11 +51,11 @@ if __name__ == "__main__":
     Fc, p = read_max_peak(sa)
 
     # Set the refrence level to the maximum
-    max_level = np.ceil(np.max(p) / 5 + 1) * 5
+    max_level = np.ceil(np.max(p) / 10 + 1) * 10
     sa.write(f"DISP:WIND:TRAC:Y:RLEV {max_level}")
 
     # Set the span to 100 MHz, 10 MHz, 1 MHz, 100 kHz, 10 kHz
-    Fspan = np.logspace(2, -2, 5)  # Span in MHz
+    Fspan = np.logspace(2, -4, 7)  # Span in MHz
 
     for span in Fspan:
         sa.write(f"sense:FREQuency:CENTer {Fc} MHz")
