@@ -1,10 +1,13 @@
 import logging
+import sys
 
 # Basic setup
+
 logging.basicConfig(
-   level=logging.INFO,
-   format='%(asctime)s - %(levelname)s - %(message)s',
-   filename='app.log'
+    level   = logging.INFO,
+    format  = '%(asctime)s - %(levelname)s - %(message)s',
+    # filemode='app.log',
+    handlers=[ logging.FileHandler('app.log'), logging.StreamHandler(sys.stdout)]
 )
 
 def divide(a, b):
