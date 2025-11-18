@@ -3,7 +3,14 @@ import  pyvisa
 import  pyvisa_py
 import  time
 import  numpy as np
+import  logging
 
+# Setup logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers = [logging.FileHandler('find_cw.log'), logging.StreamHandler(sys.stdout)]
+)
 
 def read_max_peak(sa):
     # Set marker to maximum peak
@@ -17,17 +24,18 @@ def read_max_peak(sa):
     return f, y
 
 
-if __name__ == "__main__":
+def main():
     # Connect to the instrument
     try:
         rm = pyvisa.ResourceManager('@py')
-        ip = '10.0.0.19'
+        ip = '192.168.1.105'
         sa = rm.open_resource(f'TCPIP0::{ip}::inst0::INSTR')
         # Query the signal generator name
         # <company_name>, <model_number>, <serial_number>,<firmware_revision>
-        print(f'Connected to {','.join(sa.query("*IDN?").strip().split(',')[0:3])}')
-    except pyvisa.errors.VisaIOError:
-        print(f'Failed to connect to the instrument at {ip}')
+        idn = ','.join(sa.query("*IDN?").strip().split(',')[0:3])
+        logging.info(f'Connected to {idn}')
+    except pyvisa.errors.VisaIOError as e:
+        logging.error(f'Failed to connect to the instrument at {ip}: {e}')
         sys.exit(1)
 
     # Reset and clear all status (errors) of the spectrum analyzer
@@ -64,12 +72,20 @@ if __name__ == "__main__":
         # Wait for the sweep to complete
         sa.query("*OPC?")
         Fc, p = read_max_peak(sa)
-        print(f'Center Frequency: {Fc} MHz, Span: {span} MHz, Peak: {p} dBm')
+        logging.info(f'Center Frequency: {Fc:.6f} MHz, Span: {span:.2e} MHz, Peak: {p:.2f} dBm')
 
-    # print the last RBW
+    # Read the last RBW
     rbw_fine = sa.query("sense:BANDwidth:RESolution?")
-    print(f'Last RBW: {float(rbw_fine.strip()):.2f} Hz')
+    logging.info(f'Last RBW: {float(rbw_fine.strip()):.2f} Hz')
 
     # Close the connection
     sa.close()
     rm.close()
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        logging.info("Operation cancelled by user")
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
