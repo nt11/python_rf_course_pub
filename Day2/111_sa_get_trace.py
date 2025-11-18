@@ -1,7 +1,7 @@
 import pyvisa
 import numpy as np
-import matplotlib as mlp
-mlp.use('TkAgg')
+import matplotlib as mpl
+mpl.use('TkAgg')
 import matplotlib.pyplot as plt
 import time
 
