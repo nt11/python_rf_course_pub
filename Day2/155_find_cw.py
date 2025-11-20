@@ -137,7 +137,7 @@ if __name__ == "__main__":
         logger.info("Operation cancelled by user")
 
     except Exception as e:
-        print(f"Unexpected error during operation: {e}")
+        logger.exception(f"Unexpected error during operation - {e}")
 
     finally:
         # Always close connections
@@ -148,4 +148,4 @@ if __name__ == "__main__":
                 rm.close()
             logger.info("Connections closed")
         except Exception as e:
-            print(f"Error closing connections: {e}")
+            logger.exception(f"Error closing connections - {e}")
