@@ -3,6 +3,9 @@ import  time
 import  numpy as np
 import  logging
 
+# module-level logger
+logger = logging.getLogger(__name__)
+
 # Import from the course utilities package
 from python_rf_course_utils.scpi import SCPIWrapper
 
@@ -34,20 +37,20 @@ def read_max_peak(sa):
 
         # Validate results (sanity check)
         if f_hz <= 0:
-            logging(f"Warning: Invalid frequency reading: {f_hz} Hz")
+            logger.warning(f"Invalid frequency reading: {f_hz} Hz")
             return False, None, None
 
         if p_dbm < -200 or p_dbm > 50:  # Reasonable power range for most SA
-            print(f"Warning: Power reading out of expected range: {p_dbm} dBm")
+            logger.warning(f"Power reading out of expected range: {p_dbm} dBm")
             # Still return the value but warn
 
         return True, f_mhz, p_dbm
 
     except ValueError as e:
-        print(f"Error converting marker values: {e}")
+        logger.error(f"Error converting marker values: {e}")
         return False, None, None
-    except Exception as e:
-        print(f"Unexpected error in read_max_peak: {e}")
+    except Exception:
+        logger.exception("Unexpected error in read_max_peak")
         return False, None, None
 
 
@@ -98,8 +101,7 @@ if __name__ == "__main__":
         # Read the maximum peak (frequency and power) with error handling
         success, Fc, p = read_max_peak(sa)
         if not success:
-            print("Failed to find initial peak, exiting")
-
+            logger.error("Failed to find initial peak, exiting")
             sys.exit(1)
 
         # Set the reference level to the maximum
@@ -119,20 +121,20 @@ if __name__ == "__main__":
             # Read the maximum peak with error handling
             success, Fc, p = read_max_peak(sa)
             if not success:
-                print(f"Failed to find peak at span {span} MHz, skipping...")
+                logger.warning(f"Failed to find peak at span {span} MHz, skipping...")
                 continue
 
-            print(f'Center Frequency: {Fc:.6f} MHz, Span: {span:.2e} MHz, Peak: {p:.2f} dBm')
+            logger.info(f'Center Frequency: {Fc:.6f} MHz, Span: {span:.2e} MHz, Peak: {p:.2f} dBm')
 
         # Read the final RBW with error handling using the wrapper's enhanced query
         success, rbw = sa_wrapper.query("sense:BANDwidth:RESolution?", expected_type=float)
         if success:
-            print(f'Last RBW: {rbw:.2f} Hz')
+            logger.info(f'Last RBW: {rbw:.2f} Hz')
         else:
-            print("Failed to read final RBW")
+            logger.warning("Failed to read final RBW")
 
     except KeyboardInterrupt:
-        print("\nOperation cancelled by user")
+        logger.info("Operation cancelled by user")
 
     except Exception as e:
         print(f"Unexpected error during operation: {e}")
