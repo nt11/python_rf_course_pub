@@ -1,5 +1,6 @@
 import re
 import sys
+import time
 
 import pyvisa
 #  Need to avoid hidden dependency to "compile" with pyinstaller
@@ -235,10 +236,35 @@ class LabDemoMxgControl(QMainWindow):
         print(f"MultiTone Bandwidth = {self.h_gui['MultiToneBw'].get_val()} MHz")
         print(f"MultiTone Number of Tones = {self.h_gui['MultiToneNtones'].get_val()}")
         if self.arb_gen is not None:
+            # Delete old waveform to prevent memory fragmentation (especially on older models like N5182A)
+            t1 = time.perf_counter()
+            try:
+                self.arb_gen.delete_wfm('RfLabMultiTone')
+            except Exception:
+                pass  # Waveform doesn't exist yet, continue
+
+            t2 = time.perf_counter()
+            # Clear error queue to prevent buildup
+            self.sig_gen_write('*CLS')
+
+            # Generate new waveform
             sig = multitone(BW=self.h_gui['MultiToneBw'].get_val(), Ntones=self.h_gui['MultiToneNtones'].get_val(),
                             Fs=self.Params['ArbNaxFs'], Nfft=2048)
+
+            t3 = time.perf_counter()
+            # Download waveform and wait for completion
             self.arb_gen.download_wfm(sig, wfmID='RfLabMultiTone')
+            self.sig_gen.query('*OPC?')  # Wait for download to complete
+            t4 = time.perf_counter()
+
+            # Play waveform (no need to wait - it's a continuous operation)
             self.arb_gen.play('RfLabMultiTone')
+            t5 = time.perf_counter()
+
+            print(f"Waveform deletion time: {t2 - t1:.3f} s")
+            print(f"Waveform generation time: {t3 - t2:.3f} s")
+            print(f"Waveform download time: {t4 - t3:.3f} s")
+            print(f"Waveform play time: {t5 - t4:.3f} s")
 
     def closeEvent(self, event):
         print("Exiting the application")
