@@ -12,6 +12,7 @@ from PyQt6.uic import loadUi
 
 from python_rf_course_utils.qt import h_gui
 from python_rf_course_utils.arb import multitone
+import time
 
 def is_valid_ip(ip:str) -> bool:
     # Regular expression pattern for matching IP address
@@ -236,11 +237,13 @@ class LabDemoMxgControl(QMainWindow):
         print(f"MultiTone Number of Tones = {self.h_gui['MultiToneNtones'].get_val()}")
         if self.arb_gen is not None:
             # Delete old waveform to prevent memory fragmentation (especially on older models like N5182A)
+            t1 = time.perf_counter()
             try:
                 self.arb_gen.delete_wfm('RfLabMultiTone')
             except Exception:
                 pass  # Waveform doesn't exist yet, continue
 
+            t2 = time.perf_counter()
             # Clear error queue to prevent buildup
             self.sig_gen_write('*CLS')
 
@@ -248,13 +251,22 @@ class LabDemoMxgControl(QMainWindow):
             sig = multitone(BW=self.h_gui['MultiToneBw'].get_val(), Ntones=self.h_gui['MultiToneNtones'].get_val(),
                             Fs=self.Params['ArbNaxFs'], Nfft=2048)
 
+            t3 = time.perf_counter()
             # Download waveform and wait for completion
             self.arb_gen.download_wfm(sig, wfmID='RfLabMultiTone')
             self.sig_gen.query('*OPC?')  # Wait for download to complete
+            t4 = time.perf_counter()
 
             # Play waveform and wait for completion
             self.arb_gen.play('RfLabMultiTone')
             self.sig_gen.query('*OPC?')  # Wait for play to complete
+            t5 = time.perf_counter()
+
+            print(f"Waveform deletion time: {t2 - t1:.3f} s")
+            print(f"Waveform generation time: {t3 - t2:.3f} s")
+            print(f"Waveform download time: {t4 - t3:.3f} s")
+            print(f"Waveform play time: {t5 - t4:.3f} s")
+
 
     def closeEvent(self, event):
         print("Exiting the application")
