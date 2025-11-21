@@ -9,6 +9,7 @@ import pyarbtools as arb
 import yaml
 from PyQt6.QtWidgets import QApplication, QMainWindow
 from PyQt6.uic import loadUi
+from PyQt6.QtCore import QTimer
 
 from python_rf_course_utils.qt import h_gui
 from python_rf_course_utils.arb import multitone
@@ -30,7 +31,7 @@ class LabDemoMxgControl(QMainWindow):
         # Change the background color of the main window to grey
         # self.setStyleSheet("background-color: grey;")
 
-        self.setWindowTitle("MXG Control")
+        self.setWindowTitle("MXG Control (with debouncing)")
 
         # Interface of the GUI Widgets to the Python code
         self.h_gui = dict(
@@ -51,6 +52,11 @@ class LabDemoMxgControl(QMainWindow):
         self.sig_gen    = None
         self.arb_gen    = None
 
+        # Timer for debouncing multitone updates
+        self.multitone_update_timer = QTimer()
+        self.multitone_update_timer.setSingleShot(True)
+        self.multitone_update_timer.timeout.connect(self._do_multitone_update)
+        self.multitone_debounce_ms = 500  # Wait 500ms after last change before updating
 
         # Load the configuration/default values from the YAML file
         self.Params     = None
@@ -226,6 +232,8 @@ class LabDemoMxgControl(QMainWindow):
                 self.sender().setChecked(False)
         else:
             print("MultiTone Off")
+            # Cancel any pending update
+            self.multitone_update_timer.stop()
             if self.arb_gen is not None:
                 self.arb_gen.stop()
                 self.arb_gen = None
@@ -235,26 +243,37 @@ class LabDemoMxgControl(QMainWindow):
         """
         Callback for multitone parameter changes.
 
-        NOTE: The MXG ARB has a ~2 second startup delay when transitioning from
-        stopped to playing state. This is a firmware limitation in the instrument.
-        The delay occurs in the SCPI command 'radio:arb:state 1' and cannot be
-        eliminated through software optimization.
+        This implements DEBOUNCING to work around the MXG ARB ~2 second startup delay.
+        Instead of updating immediately on every dial/spinbox change, it waits for
+        the user to stop making changes before applying the update.
 
-        Possible workarounds:
-        1. Use debouncing to reduce update frequency (not implemented here)
-        2. Use MXG List Mode for sub-millisecond switching (requires significant rewrite)
-        3. Accept the delay as a hardware characteristic
+        The delay is a firmware limitation in the MXG instrument that occurs when
+        the SCPI command 'radio:arb:state 1' transitions from stopped to playing.
         """
         print(f"MultiTone Bandwidth = {self.h_gui['MultiToneBw'].get_val()} MHz")
         print(f"MultiTone Number of Tones = {self.h_gui['MultiToneNtones'].get_val()}")
+        print(f"  → Update scheduled in {self.multitone_debounce_ms}ms...")
+
+        # Cancel previous timer and start a new one
+        self.multitone_update_timer.stop()
+        self.multitone_update_timer.start(self.multitone_debounce_ms)
+
+    def _do_multitone_update(self):
+        """
+        Actual multitone update function (called after debounce timeout).
+        """
         if self.arb_gen is not None:
+            print("  → Applying multitone update now (expect ~2 second delay)...")
             sig = multitone(BW=self.h_gui['MultiToneBw'].get_val(), Ntones=self.h_gui['MultiToneNtones'].get_val(),
                             Fs=self.Params['ArbNaxFs'], Nfft=2048)
             self.arb_gen.download_wfm(sig, wfmID='RfLabMultiTone')
-            self.arb_gen.play('RfLabMultiTone')  # ~2 second delay here (instrument firmware limitation)
+            self.arb_gen.play('RfLabMultiTone')  # ~2 second delay here
+            print("  → Update complete!")
 
     def closeEvent(self, event):
         print("Exiting the application")
+        # Stop any pending updates
+        self.multitone_update_timer.stop()
         # Clean up the resources
         # Close the connection to the signal generator
         if self.sig_gen is not None:
