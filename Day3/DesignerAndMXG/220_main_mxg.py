@@ -200,6 +200,20 @@ class LabDemoMxgControl(QMainWindow):
 
     # Callback function for the MultiTone On/Off button
     def cb_multitone_on_off(self):
+        """
+        Callback function for the MultiTone On/Off button
+        Actions:
+        - When the button is checked (On):
+            - Create an ARB object
+            - Configure the ARB object
+            - Clear errors
+            - Set ALC to Off
+            - Call the MultiToneBw callback function to update the waveform
+            - Set the Mod_On_Off and RF_On_Off buttons to On
+        - When the button is unchecked (Off):
+            - Stop and delete the ARB object
+            - Set the Mod_On_Off button to Off
+        """
         if self.sender().isChecked():
             print("MultiTone On")
             try:
@@ -232,6 +246,15 @@ class LabDemoMxgControl(QMainWindow):
             self.h_gui['Mod_On_Off'].set_val(False, is_callback=False)
 
     def cb_multitone_update(self):
+        """
+        Callback function for the MultiTone Bandwidth and Number of Tones
+        Sequence of actions:
+        - Print the MultiTone Bandwidth and Number of Tones
+        - If the ARB object is not None:
+            - Generate the MultiTone waveform using the multitone function
+            - Download the waveform to the ARB object
+            - Play the waveform
+        """
         print(f"MultiTone Bandwidth = {self.h_gui['MultiToneBw'].get_val()} MHz")
         print(f"MultiTone Number of Tones = {self.h_gui['MultiToneNtones'].get_val()}")
         if self.arb_gen is not None:
