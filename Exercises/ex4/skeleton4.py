@@ -8,9 +8,9 @@ import yaml
 from PyQt6.QtWidgets import QApplication, QMainWindow
 from PyQt6.uic import loadUi
 
-# EX4: import h_gui and multitone from the course repository (slide 2-7)
+# EX4: import h_gui from the python_rf_course_utils.qt directory (slide 2-7)
 
-# EX4: the base directory for the course is python_rf_course (from python_rf_course. ... import ...)
+# EX4: import the multitone module from the python_rf_course_utils.arb directory (slide 2-7)
 
 def is_valid_ip(ip:str) -> bool:
     # Regular expression pattern for matching IP address
