@@ -206,7 +206,7 @@ class LabDemoMxgControl(QMainWindow):
                 # Create ARB object
                 mxg_ip         = self.h_gui['IP'].get_val()
                 self.arb_gen    = arb.instruments.VSG(mxg_ip, timeout=3)
-                self.arb_gen.configure(fs=self.Params['ArbNaxFs']*1e6, iqScale=70 )
+                self.arb_gen.configure(fs=self.Params['ArbMaxFs']*1e6, iqScale=70 )
                 # Clear Errors
                 self.sig_gen_write('*CLS')
                 # Set the Auto Level Control to Off (ALC)
@@ -236,7 +236,7 @@ class LabDemoMxgControl(QMainWindow):
         print(f"MultiTone Number of Tones = {self.h_gui['MultiToneNtones'].get_val()}")
         if self.arb_gen is not None:
             sig = multitone(BW=self.h_gui['MultiToneBw'].get_val(), Ntones=self.h_gui['MultiToneNtones'].get_val(),
-                            Fs=self.Params['ArbNaxFs'], Nfft=2048)
+                            Fs=self.Params['ArbMaxFs'], Nfft=2048)
             self.arb_gen.download_wfm(sig, wfmID='RfLabMultiTone')
             self.arb_gen.play('RfLabMultiTone')
 
