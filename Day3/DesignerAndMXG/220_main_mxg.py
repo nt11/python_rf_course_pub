@@ -27,8 +27,92 @@ class LabDemoMxgControl(QMainWindow):
         super().__init__()
         # Load the UI file into the Class (LabDemoMxgControl) object
         loadUi("MxgControlMultiTone.ui", self)
-        # Change the background color of the main window to grey
-        # self.setStyleSheet("background-color: grey;")
+        # Apply light theme stylesheet for clear visibility
+        self.setStyleSheet("""
+            QMainWindow {
+                background-color: #f5f5f5;
+            }
+            QWidget {
+                background-color: #ffffff;
+                color: #202020;
+                font-size: 10pt;
+            }
+            QPushButton {
+                background-color: #e8e8e8;
+                border: 1px solid #a0a0a0;
+                border-radius: 4px;
+                padding: 5px 15px;
+                color: #202020;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #d0d0d0;
+                border: 1px solid #808080;
+            }
+            QPushButton:pressed {
+                background-color: #b8b8b8;
+            }
+            QPushButton:checked {
+                background-color: #90c8f0;
+                border: 1px solid #4080c0;
+            }
+            QLineEdit {
+                background-color: #ffffff;
+                border: 2px solid #c0c0c0;
+                border-radius: 3px;
+                padding: 3px;
+                color: #000000;
+            }
+            QLineEdit:focus {
+                border: 2px solid #4080c0;
+            }
+            QSlider::groove:horizontal {
+                background: #d0d0d0;
+                height: 8px;
+                border-radius: 4px;
+            }
+            QSlider::handle:horizontal {
+                background: #4080c0;
+                border: 1px solid #2060a0;
+                width: 18px;
+                margin: -5px 0;
+                border-radius: 9px;
+            }
+            QDial {
+                background-color: #f0f0f0;
+            }
+            QDoubleSpinBox, QSpinBox {
+                background-color: #ffffff;
+                border: 2px solid #c0c0c0;
+                border-radius: 3px;
+                padding: 2px;
+                color: #000000;
+            }
+            QLCDNumber {
+                background-color: #e0e0e0;
+                border: 1px solid #a0a0a0;
+                color: #000000;
+            }
+            QLabel {
+                color: #202020;
+                background-color: transparent;
+            }
+            QMenuBar {
+                background-color: #f0f0f0;
+                color: #202020;
+            }
+            QMenuBar::item:selected {
+                background-color: #d0d0d0;
+            }
+            QMenu {
+                background-color: #ffffff;
+                border: 1px solid #c0c0c0;
+                color: #202020;
+            }
+            QMenu::item:selected {
+                background-color: #90c8f0;
+            }
+        """)
 
         self.setWindowTitle("MXG Control")
 
