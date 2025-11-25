@@ -47,7 +47,7 @@ def wait_for_sweep(sa, timeout_seconds=10):
 def read_max_peak(sa):
     # Set marker to maximum peak
     sa.write("CALC:MARK:MAX")
-    time.sleep(0.01)
+    sa.query("*OPC?")
     # Query the marker frequency
     f = float(sa.query("CALC:MARK:X?").strip())*1e-6
     # Query the marker power

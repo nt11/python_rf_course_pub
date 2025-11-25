@@ -83,6 +83,8 @@ class LabDemoVsaControl(QMainWindow):
         self.plot_sa        = PlotWidget()
         layout              = QVBoxLayout(self.widget)
         layout.addWidget(self.plot_sa)
+        # Set the background color of the plot widget to white
+        self.plot_sa.set_background_color('white')
 
         # Create a timer for the Spectrum Analyzer plot
         self.timer          = QTimer()
