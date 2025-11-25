@@ -1,7 +1,10 @@
 import pyvisa
 import time
+import matplotlib
+matplotlib.use('TkAgg')
 from datetime import datetime
 import matplotlib.pyplot as plt
+plt.ion()
 import numpy as np
 
 class SpectrumAnalyzer:
@@ -148,8 +151,6 @@ def main():
 
 
 if __name__ == "__main__":
-    import matplotlib
-    matplotlib.use('TkAgg')
-    plt.ion()
+
 
     main()
