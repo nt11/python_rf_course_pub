@@ -1,13 +1,15 @@
 import re
-
+import sys
+import logging
+import pyvisa
 import  yaml
 from    PyQt6.QtWidgets    import QApplication, QMainWindow, QVBoxLayout
 from    PyQt6.uic          import loadUi
 
 import numpy as np
 
-from python_rf_course_utils.qt import h_gui, PlotWidget, setup_logger
-from python_rf_course_utils.scpi import wrapper
+from python_rf_course_utils.qt   import h_gui, PlotWidget, setup_logger
+from python_rf_course_utils.scpi import SCPIWrapper
 
 from ex5_long_process import LongProcess
 
