@@ -26,10 +26,11 @@ class LongProcess(QThread):
         #EX5_thread2: Send a log message that you are starting the scan (Start with the word "Thread:")
         #
 
+
         # Set RF output on
         self.scpi_sg.write(":OUTPUT:STATE ON")
         self.scpi_sg.write(":OUTPUT:MOD:STATE OFF")
-        #EX5_thread3: Set the SA RBW to 0.1 MHz and the detector to average using the SCPI wrapper(slide 2-55)
+        #EX5_thread3: Set the SA RBW to 0.1 MHz and the detector to average using the SCPI wrapper(slide 4-39, 2-64)
         #
         #
         # Trace Clear/write mode
@@ -55,9 +56,10 @@ class LongProcess(QThread):
 
             #EX5_thread4: Set marker to peak - Use SCPI Wrapper, use SCPI commands from the auxiliary sheet
             #
+
             #EX5_thread5: Get the peak_value by quering the SCPI Wrapper. Use SCPI commands from the auxiliary sheet
             #Remember to strip the output and cast to float
-            #peak_value =
+
             # Set the reference level
             max_level  = np.ceil( peak_value/10 + 1)*10
             set_level  = float(self.scpi_sa.query(f"DISP:WIND:TRAC:Y:RLEV?").strip() )
@@ -78,7 +80,7 @@ class LongProcess(QThread):
             if not self.running:
                 break
 
-        #EX5_thread6: Emit the final freq,power  (slide 4-27, example o310)
+        #EX5_thread6: Emit the final freq,power  (slide 4-27, example o310) - please note the block structure, this is after to for loop
         #
 
 
