@@ -1,18 +1,28 @@
 import re
-
+import sys
+import logging
+import pyvisa
 import  yaml
 from    PyQt6.QtWidgets    import QApplication, QMainWindow, QVBoxLayout
 from    PyQt6.uic          import loadUi
 
 import numpy as np
 
-from python_rf_course_utils.qt import h_gui, PlotWidget, setup_logger
-from python_rf_course_utils.scpi import wrapper
+from python_rf_course_utils.qt   import h_gui, PlotWidget, setup_logger
+from python_rf_course_utils.scpi import SCPIWrapper
+
+from ex5_long_process import LongProcess
+
+
 
 #EX5_1: Import the thread class form the ex5_long_process_skeleton_lite.py file
 #
+from ex5_long_process_skeleton_lite import LongProcess
 
+import socket
+#EX5_1a: Replace the is_valid_ip with a socket library (import socket) based implementation
 
+#EX5_1b: Remove the is_valid_ip function below
 def is_valid_ip(ip:str) -> bool:
     # Regular expression pattern for matching IP address
     ip_pattern = r'^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
@@ -27,7 +37,8 @@ class LabNetworkControl(QMainWindow):
         loadUi("network.ui", self)
         # Create Logger
         # EX5_2: Create a logger object calling setup_logger with the name 'net_log' and set the level to DEBUG (Slide 4-30, example 310)
-        #
+        # place it in self.log
+
         logging.getLogger('net_log').propagate = True
         self.scpi = None
 
@@ -65,6 +76,7 @@ class LabNetworkControl(QMainWindow):
         self.h_gui['Save'].emit() #  self.cb_save
 
         #EX5_3: Create a widget for the Spectrum Analyzer plot and add it to the layout (slide 4-21, example 310)
+        # Note: need to send self.widget as the parent to the QVBoxLayout
         #
         #
         #
@@ -87,8 +99,8 @@ class LabNetworkControl(QMainWindow):
                 self.sa.timeout = 5000
                 self.sg.timeout = 5000
                 #EX5_4: Create the SCPIWrapper objects for the Spectrum Analyzer and Signal Generator
-                # call them self.scpi_sa and self.scpi_sg. To understand how to do this, go and read the file that is imported as
-                # SCPI_wrapper.py in utils
+                # call them self.scpi_sa and self.scpi_sg. To help the AI engine, call SCPIWrapper with the function parameter names
+                # e.g. SCPIWrapper(instr=...
                 #
                 #
 
@@ -100,11 +112,12 @@ class LabNetworkControl(QMainWindow):
                 idn_sg      = ','.join( self.scpi_sg.query("*IDN?").split(',')[1:3])
                 # Remove the firmware revision
                 self.setWindowTitle('SA:' + idn_sa + " | SG:" + idn_sg)
-                # Reset and clear all status (errors) of the spectrum analyzer
-                self.scpi_sa.write("*RST")
-                self.scpi_sa.write("*CLS")
-                self.scpi_sg.write("*RST")
-                self.scpi_sg.write("*CLS")
+                # EX5_4a Reset and clear all status (errors) of the spectrum analyzer and signal generator using the self.scpi_sa and self.scpi_sg objects
+                #
+                #
+                #
+                #
+
             except Exception:
                 self.log.error("Connection failed")
                 if self.sa is not None:
@@ -152,7 +165,7 @@ class LabNetworkControl(QMainWindow):
 
     # thread callback functions
     def tcb_progress(self, i):
-        #Ex5_9: Set the progress bar value to i- The name in h_gui is GoProgress
+        #Ex5_9: Set the progress bar value to i- The name in h_gui is GoProgress using the h_gui set_val method
         #
 
     # thread callback functions
@@ -172,6 +185,7 @@ class LabNetworkControl(QMainWindow):
                                       self.h_gui['Npoints'].get_val())
             # Set the signal generator to output power (self.Params["Pout"]))
             self.scpi_sg.write(f":OUTP:STATe OFF")
+
             # Ex5_5: Set the signal generator to output power. Use the self.Params['Pout'] value to set the SG power using
             # the SCPI wrapper object
             #
@@ -179,6 +193,7 @@ class LabNetworkControl(QMainWindow):
             # initialize the freq and power arrays to empty
             self.freq = np.array([])
             self.power = np.array([])
+
             #EX5_6: Instatiate the thread object, call it self.thread. To understand how to do this, go to the file containing
             # LongProcess class and read the class and comments
             #
@@ -191,7 +206,7 @@ class LabNetworkControl(QMainWindow):
             #
             #
 
-            #EX5_8: Start the thread object. Slide 4-26 (example 310)
+            #EX5_8: Start the thread object. Slide 4-26 (example 310). Note, the start runs the "run" method in the process class
             #
 
 
