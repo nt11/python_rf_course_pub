@@ -11,13 +11,9 @@ import numpy as np
 from python_rf_course_utils.qt   import h_gui, PlotWidget, setup_logger
 from python_rf_course_utils.scpi import SCPIWrapper
 
-from ex5_long_process import LongProcess
-
-
 
 #EX5_1: Import the thread class form the ex5_long_process_skeleton_lite.py file
 #
-from ex5_long_process_skeleton_lite import LongProcess
 
 import socket
 #EX5_1a: Replace the is_valid_ip with a socket library (import socket) based implementation
