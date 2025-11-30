@@ -180,12 +180,12 @@ class LabNetworkControl(QMainWindow):
             self.f_scan = np.linspace(self.h_gui['Fstart'].get_val(),
                                       self.h_gui['Fstop'  ].get_val(),
                                       self.h_gui['Npoints'].get_val())
-            # Set the signal generator to output power (self.Params["Pout"]))
+            # Set the signal generator output to RF off
             self.scpi_sg.write(f":OUTP:STATe OFF")
 
-            # Ex5_5: Set the signal generator to output power. Use the self.Params['Pout'] value to set the SG power using
-            # the SCPI wrapper object
+            # Ex5_5: Set the SG power level to the self.Params['Pout'] value using the SCPI wrapper object
             #
+
 
             # initialize the freq and power arrays to empty
             self.freq = np.array([])
