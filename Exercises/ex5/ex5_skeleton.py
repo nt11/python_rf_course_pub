@@ -167,6 +167,7 @@ class LabNetworkControl(QMainWindow):
     def tcb_progress(self, i):
         #Ex5_9: Set the progress bar value to i- The name in h_gui is GoProgress using the h_gui set_val method
         #
+        pass
 
     # thread callback functions
     def tcb_plot(self, freq, power):
