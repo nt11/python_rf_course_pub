@@ -101,6 +101,12 @@ class LabNetworkControl(QMainWindow):
                 #
 
                 self.log.info(f"Connected to {ip_sa=} and {ip_sg=}")
+                # EX5_4a Reset and clear all status (errors) of the spectrum analyzer and signal generator using the self.scpi_sa and self.scpi_sg objects
+                #
+                #
+                #
+                #
+
                 # Read the signal generator status and update the GUI (RF On/Off, Modulation On/Off,Pout and Fc)
                 # Query the signal generator name
                 # <company_name>, <model_number>, <serial_number>,<firmware_revision>
@@ -108,11 +114,6 @@ class LabNetworkControl(QMainWindow):
                 idn_sg      = ','.join( self.scpi_sg.query("*IDN?").split(',')[1:3])
                 # Remove the firmware revision
                 self.setWindowTitle('SA:' + idn_sa + " | SG:" + idn_sg)
-                # EX5_4a Reset and clear all status (errors) of the spectrum analyzer and signal generator using the self.scpi_sa and self.scpi_sg objects
-                #
-                #
-                #
-                #
 
             except Exception:
                 self.log.error("Connection failed")

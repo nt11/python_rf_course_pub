@@ -90,6 +90,11 @@ class LabNetworkControl(QMainWindow):
                 self.scpi_sg    = SCPIWrapper(instr=self.sg, log= self.log, name='SG')
 
                 self.log.info(f"Connected to {ip_sa=} and {ip_sg=}")
+                # Reset and clear all status (errors) of the spectrum analyzer
+                self.scpi_sa.write("*RST")
+                self.scpi_sa.write("*CLS")
+                self.scpi_sg.write("*RST")
+                self.scpi_sg.write("*CLS")
                 # Read the signal generator status and update the GUI (RF On/Off, Modulation On/Off,Pout and Fc)
                 # Query the signal generator name
                 # <company_name>, <model_number>, <serial_number>,<firmware_revision>
@@ -97,11 +102,7 @@ class LabNetworkControl(QMainWindow):
                 idn_sg      = ','.join( self.scpi_sg.query("*IDN?").split(',')[1:3])
                 # Remove the firmware revision
                 self.setWindowTitle('SA:' + idn_sa + " | SG:" + idn_sg)
-                # Reset and clear all status (errors) of the spectrum analyzer
-                self.scpi_sa.write("*RST")
-                self.scpi_sa.write("*CLS")
-                self.scpi_sg.write("*RST")
-                self.scpi_sg.write("*CLS")
+
             except Exception:
                 self.log.error("Connection failed")
                 if self.sa is not None:
