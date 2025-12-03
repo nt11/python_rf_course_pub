@@ -46,7 +46,7 @@ class PaScan(QThread):
         freq    = np.array([])
         for i, f in enumerate(self.f_scan):
             # Set the SG to the frequency of the current scan point and power level
-            p_tx = p_tx_nominal - 5 # Check gain at low power
+            p_tx = p_tx_nominal - 10 # Check gain at low power
             self.scpi_sg.write(f"POW:LEV {p_tx}")
             self.scpi_sg.write(f"freq {f} MHz")
 
@@ -55,6 +55,7 @@ class PaScan(QThread):
 
             # Small signal gain
             self.scpi_sg.write(":OUTPUT:MOD:STATE OFF") # Modulation off
+            self.scpi_sg.query(f"*OPC?")
             peak_value = self.sa_sweep_marker_max()
 
             # Set the reference level
@@ -174,16 +175,24 @@ class PaScan(QThread):
         return op1dB_i
 
     def sa_sweep_marker_max(self):
+        # Set detector to average
+        self.scpi_sa.write("SENSE:DETECTOR AVERage")
+        # Read the Sweep time
+        sweep_time = float(self.scpi_sa.query("SENSE:SWEEP:TIME?"))
+        # call OPC after save
+        self.scpi_sa.query("*OPC?")
+        # Set sweep time to 10x for average detector
+        self.scpi_sa.write(f"SENSE:SWEEP:TIME {sweep_time*10}")
         # Initiate a single sweep
         self.scpi_sa.write("INITiate:IMMediate")
-        try:
-            self.scpi_sa.query("*OPC?")
-        except pyvisa.errors.VisaIOError:
-            self.log.emit(f"Thread: OPC Failed at {f} MHz")
+        self.scpi_sa.query("*OPC?")
         # Set marker to peak
         self.scpi_sa.write("CALCulate:MARKer:MAXimum")
         # Get the peak value
         peak_value = float(self.scpi_sa.query("CALCulate:MARKer:Y?"))
+        # Set sweep time to auto
+        self.scpi_sa.write("SWEEP:TIME:AUTO ON")
+        self.scpi_sa.query("*OPC?")
 
         return peak_value
 

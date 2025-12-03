@@ -1,5 +1,6 @@
 import re
 
+import  sys
 import  yaml
 from    PyQt6.QtWidgets    import QApplication, QMainWindow, QVBoxLayout
 from    PyQt6.uic          import loadUi
@@ -8,7 +9,7 @@ from    PyQt6.QtCore       import QTimer
 import numpy as np
 
 from python_rf_course_utils.qt import h_gui, PlotWidget, setup_logger
-from python_rf_course_utils.scpi import wrapper
+from python_rf_course_utils.scpi import SCPIWrapper
 from python_rf_course_utils.arb import multitone
 
 from pa_app_thread import PaScan
