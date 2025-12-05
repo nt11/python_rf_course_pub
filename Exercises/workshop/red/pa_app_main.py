@@ -4,8 +4,7 @@
 # 2. QLabel widget named "label_18" to display dial value
 # 3. Connect dial's valueChanged signal to label_18's setNum slot
 #
-# WSR_1 Import everything you need (import re, sys, yaml, PyQt6 modules: QApplication, QMainWindow, QVBoxLayout, loadUi, QTimer,
-# numpy, logging, time, pyvisa, pyvisa_py, pyarbtools as arb, and from pa_app_thread import PaScan)
+#WSR_1
 #
 
 from python_rf_course_utils.qt import h_gui, PlotWidget, setup_logger
@@ -25,7 +24,7 @@ class PA_App(QMainWindow):
         super().__init__()
         # Load the UI file into the Class (LabDemoVsaControl) object
         loadUi("pa_app.ui", self)
-        #WSR_2: Set up the logger for the application (slide 4-30, example 310)
+        #WSR_2
         #self.log = ...
         logging.getLogger('pa_log').propagate = True
         self.scpi = None
@@ -53,7 +52,7 @@ class PA_App(QMainWindow):
             Load                = h_gui(self.actionLoad         , self.cb_load              ))
 
         # Create a Resource Manager object
-        #WSR_3: Create the Resource Manager object (slide 2-54, example 109)
+        #WSR_3
         #self.rm         = ...
         self.sa         = None
         self.sg         = None
@@ -74,7 +73,7 @@ class PA_App(QMainWindow):
         self.h_gui['Ptx'].set_val(self.h_gui['Ptx'].get_val()) #  Update the signal (event)
 
         # Create a widget for the Spectrum Analyzer plot
-        #WSR_4: Create a widget for the Spectrum Analyzer plot (slide 4-23, example 310)
+        #WSR_4
         #self.plot_sa        = ...
         #
         #
@@ -86,7 +85,7 @@ class PA_App(QMainWindow):
         self.Fspan  = None
         self.thread = None
 
-        #WS_1 - Create a timer for the Spectrum Analyzer plot, connect it to cb_timer_trace and start it for 250ms (slide 4-24, example 310)
+        #WS_1
         #
         #
         #
@@ -99,21 +98,21 @@ class PA_App(QMainWindow):
             self.log.info("Connect button Checked")
             # Open the connection to the signal generator
             try:
-                #WSR_5: Obtain the IP values from the GUI
+                #WSR_5
                 #ip_sa          = ...
                 #ip_sg          = ...
 
-                #WSR_6: Open the resources for the spectrum analyzer and signal generator (slide 2-54, example 109)
+                #WSR_6
                 #self.sa        = ...
                 #self.sg        = ...
 
-                #WSR_7: Create the arb object (slide 3-51, example 219)
+                #WSR_7
                 #self.arb       = ...
 
                 self.sa.timeout = 5000
                 self.sg.timeout = 5000
 
-                #WSR_8: Create the SCPIWrapper objects for the spectrum analyzer and signal generator (slide 4-40)
+                #WSR_8
                 #self.scpi_sa    = ...
                 #self.scpi_sg    = ...
 
@@ -125,7 +124,7 @@ class PA_App(QMainWindow):
                 idn_sg      = ','.join( self.scpi_sg.query("*IDN?").split(',')[1:3])
                 # Remove the firmware revision
                 self.setWindowTitle('SA:' + idn_sa + " | SG:" + idn_sg)
-                #WSR_9: Send reset, clear to both sa and sg (slide 4-11)
+                #WSR_9
                 #
                 #
                 #
@@ -134,9 +133,7 @@ class PA_App(QMainWindow):
                 # Load the arb with a two tone signal
 
 
-                #WS_2 - configure the multitone for a 2 tone signal with the bandwidth of the PA and the sampling frequency of the arb
-                # and play the signal on the arb (slide 3-51, example 219). Use ArbFd as BW and ArbFS as Fs (from the yaml),
-                # remember that the configure function of the arb object takes the sampling frequency in Hz
+                #WS_2
                 #sig = multitone(...
                 #self.arb.configure(...
                 #self.arb.download_wfm(...
@@ -156,7 +153,7 @@ class PA_App(QMainWindow):
                 # Set the spectrum analyzer center frequency and the signal generator frequency
                 self.scpi_sa.write(f"freq:cent {self.Params['Fnominal']} MHz")
                 self.scpi_sg.write(f"freq {     self.Params['Fnominal']} MHz")
-                # WS_3 Save the signal generator and spectrum analyzer state for the spectrum analyzer and signal generator (slide 4-11)
+                #WS_3
                 #
                 #
                 time.sleep(0.01)
@@ -183,7 +180,7 @@ class PA_App(QMainWindow):
             self.scpi = None
 
     def cb_ptx(self):
-        #WSR_10: Set the signal generator power level to the value of the dial. Get the ptx from the GUI and send it to the SG
+        #WSR_10
         #
         if self.sg is not None:
             #
@@ -238,8 +235,7 @@ class PA_App(QMainWindow):
                 y_max = None
 
             # Plot the trace
-            # WSR_11: Plot the trace from the spectrum analyzer (slide 4-21, example 310),
-            # set the x and y labels, title, line width to 3.0, y_lim_min and y_lim_max and clear the plot
+            #WSR_11
             #
 
 
@@ -273,7 +269,7 @@ class PA_App(QMainWindow):
     def cb_testpa(self):
         if self.sender().isChecked():
             if self.sa is not None:
-                #WSR_12: Stop the timer (slide 4-23)
+                #WSR_12
                 #
                 self.log.info("Initialize scan params")
                 self.f_scan = np.linspace(self.h_gui['Fstart' ].get_val(),
@@ -281,7 +277,7 @@ class PA_App(QMainWindow):
                                           self.h_gui['Npoints'].get_val())
 
 
-                #WSR_13: Create the thread object and connect it to signals, connect progress to tcb_progress, data to tcb_plot, log to self.log.info and csv to tcb_dump_csv
+                #WSR_13
                 #self.thread = ...
                 #
                 #
@@ -293,10 +289,10 @@ class PA_App(QMainWindow):
                 self.thread.lcd_oip3 .connect(self.h_gui['ScanOIP3'  ].set_val)
                 self.thread.lcd_oip5 .connect(self.h_gui['ScanOIP5'  ].set_val)
                 self.thread.lcd_p_out .connect(self.h_gui['ScanPout' ].set_val)
-                # WSR_14: Start the thread (slide 4-26)
+                #WSR_14
                 #
         else:
-            # WS_4: Stop the thread/wait and recall the signal generator and spectrum analyzer state  (slide 4-26, example 310)
+            #WS_4
             self.log.info("Stop the thread")
             if self.thread is not None:
                 #

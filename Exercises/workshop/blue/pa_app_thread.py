@@ -28,14 +28,14 @@ class PaScan(QThread):
         self.running = True
         self.log.emit("Thread: Starting scan")
 
-        #WK_1: Signal Generator RF Output On
+        #WK_1
         #
-        #WK_2: Spectrum Analyzer Detector Average, Trace Mode Write, Single Sweep Mode
+        #WK_2
         #
         #
         #
 
-        #WK_3: Get the power level from the signal generator into p_tx_nominal
+        #WK_3
         #p_tx_nominal = ...
 
         # Create a list to store the scan data
@@ -48,15 +48,15 @@ class PaScan(QThread):
         for i, f in enumerate(self.f_scan):
             # Set the SG to the frequency of the current scan point and power level
             p_tx = p_tx_nominal - 10 # Check gain at low power
-            #WK_4: Set the signal generator frequency and power level
+            #WK_4
             #
             #
 
-            #WK_5: Set the SA center frequency
+            #WK_5
             #
 
             # Small signal gain
-            #WK_6: Set the signal generator modulation off for CW testing
+            #WK_6
             #
             # Get the peak value
             peak_value = self.sa_sweep_marker_max()
@@ -69,26 +69,26 @@ class PaScan(QThread):
                 self.scpi_sa.write(f"DISP:WIND:TRAC:Y:RLEV {max_level}")
 
             # compute the gain and save the frequency and gain
-            #WK_7: Compute the gain from the peak value, loss and power level
+            #WK_7
             #gain_i = ...
             gain = np.append(gain, gain_i)
             freq  = np.append(freq, f)
             # Update the Gain LCD
-            #WK_8 Emit a signal to the gain LCD (slide 4-27, example o310)
+            #WK_8
             #
             self.lcd_p_out.emit(peak_value + self.loss)
 
 
             # OP1dB
-            #WK_9: Call find_op1db_binary_search with range (p_tx_nominal - 6, p_tx_nominal + 5) and gain[-1] as reference
+            #WK_9
             #op1dB_i = ...
-            #WK_10: Append the op1dB_i to the op1dB array
+            #WK_10
             #op1dB = ...
-            #WK_11: Emit a signal to the OP1dB LCD (slide 4-27, example o310)
+            #WK_11
             #
 
             # OIP3 and OIP5
-            # WK_12 Modulation On and tx power to p_tx_nominal on signal generator
+            #WK_12
             #
             #
             peak_value = self.sa_sweep_marker_max()
@@ -105,14 +105,14 @@ class PaScan(QThread):
             f_oip3 = f_sub_h + (f_sub_h - f_sub_l)
             self.scpi_sa.write(f"CALCulate:MARKer:X {f_oip3} Hz")
             # Get the peak value
-            # WK_13: Get the peak value from the spectrum analyzer using a SCPI command
+            #WK_13
             #peak_value = ...
             p_i3        = peak_value + self.loss
             # Next peak twice (OIP5)
             f_oip5 = f_sub_h + (f_sub_h - f_sub_l)*2
             self.scpi_sa.write(f"CALCulate:MARKer:X {f_oip5} Hz")
             # Get the peak value
-            # WK_14: Get the peak value from the spectrum analyzer using a SCPI command
+            #WK_14
             #peak_value = ...
             p_i5        = peak_value + self.loss
 
@@ -146,10 +146,10 @@ class PaScan(QThread):
             mid = (low + high) / 2
 
             # Set the power level and measure gain
-            #WK_17: Set the signal generator power level to mid
+            #WK_17
             #
             peak_value  = self.sa_sweep_marker_max()
-            #WK_18: Compute the gain from the peak value, loss and mid power level
+            #WK_18
             #gain_i      = ...
             gain_diff   = gain_ref - gain_i
             self.lcd_p_out.emit(peak_value + self.loss)
@@ -181,9 +181,9 @@ class PaScan(QThread):
         self.scpi_sa.query("*OPC?")
         # Set sweep time to 10x for average detector
         self.scpi_sa.write(f"SENSE:SWEEP:TIME {sweep_time*10}")
-        # WK_15 Initiate a single sweep on the spectrum analyzer using a SCPI command
+        #WK_15
         #
-        # WK_16 Check for operation complete using a SCPI command (OPC)
+        #WK_16
         #
         # Set marker to peak using a SCPI command
         #

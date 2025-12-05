@@ -92,7 +92,7 @@ class PA_App(QMainWindow):
         self.Fspan  = None
         self.thread = None
 
-        #WS_1 - Create a timer for the Spectrum Analyzer plot, connect it to cb_timer_trace and start it for 250ms (slide 4-24, example 310)
+        #WS_1
         #
         #
         #
@@ -131,9 +131,7 @@ class PA_App(QMainWindow):
                 # Load the arb with a two tone signal
 
 
-                #WS_2 - configure the multitone for a 2 tone signal with the bandwidth of the PA and the sampling frequency of the arb
-                # and play the signal on the arb (slide 3-51, example 219). Use ArbFd as BW and ArbFS as Fs (from the yaml),
-                # remember that the configure function of the arb object takes the sampling frequency in Hz
+                #WS_2
                 #sig = multitone(...
                 #self.arb.configure(...
                 #self.arb.download_wfm(...
@@ -153,7 +151,7 @@ class PA_App(QMainWindow):
                 # Set the spectrum analyzer center frequency and the signal generator frequency
                 self.scpi_sa.write(f"freq:cent {self.Params['Fnominal']} MHz")
                 self.scpi_sg.write(f"freq {     self.Params['Fnominal']} MHz")
-                # WS_3 Save the signal generator and spectrum analyzer state for the spectrum analyzer and signal generator (slide 4-11)
+                #WS_3
                 #
                 #
                 time.sleep(0.01)
@@ -292,7 +290,7 @@ class PA_App(QMainWindow):
 
                 self.thread.start() # Start the thread calling the run method
         else:
-            # WS_4: Stop the thread/wait and recall the signal generator and spectrum analyzer state  (slide 4-26, example 310)
+            #WS_4
             self.log.info("Stop the thread")
             if self.thread is not None:
                 #
