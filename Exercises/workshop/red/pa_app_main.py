@@ -1,13 +1,10 @@
-# WSR_1 Import everything you need
+# WSR_1 Import everything you need (import re, sys, yaml, PyQt6 modules: QApplication, QMainWindow, QVBoxLayout, loadUi, QTimer,
+# numpy, logging, time, pyvisa, pyvisa_py, pyarbtools as arb, and from pa_app_thread import PaScan)
 #
 
 from python_rf_course_utils.qt import h_gui, PlotWidget, setup_logger
-from python_rf_course_utils.scpi import wrapper
+from python_rf_course_utils.scpi import SCPIWrapper
 from python_rf_course_utils.arb import multitone
-
-# WSR_2 Import the worker thread class
-#
-
 
 
 def is_valid_ip(ip:str) -> bool:
@@ -22,7 +19,7 @@ class PA_App(QMainWindow):
         super().__init__()
         # Load the UI file into the Class (LabDemoVsaControl) object
         loadUi("pa_app.ui", self)
-        #WSR_3: Set up the logger for the application (slide 4-30, example 310)
+        #WSR_2: Set up the logger for the application (slide 4-30, example 310)
         #self.log = ...
         logging.getLogger('pa_log').propagate = True
         self.scpi = None
@@ -40,15 +37,17 @@ class PA_App(QMainWindow):
             Fstart              = h_gui(self.lineEdit_3         , self.cb_scan              ),
             Fstop               = h_gui(self.lineEdit_4         , self.cb_scan              ),
             Npoints             = h_gui(self.lineEdit_5         , self.cb_scan              ),
+            FreezeYAxis         = h_gui(self.checkBox           , None                      ),
             ScanG               = h_gui(self.lcdNumber          , None                      ),
             ScanOP1dB           = h_gui(self.lcdNumber_2        , None                      ),
             ScanOIP3            = h_gui(self.lcdNumber_3        , None                      ),
             ScanOIP5            = h_gui(self.lcdNumber_4        , None                      ),
+            ScanPout            = h_gui(self.lcdNumber_5        , None                      ),
             Save                = h_gui(self.actionSave         , self.cb_save              ),
             Load                = h_gui(self.actionLoad         , self.cb_load              ))
 
         # Create a Resource Manager object
-        #WSR_4: Create the Resource Manager object (slide 2-54, example 109)
+        #WSR_3: Create the Resource Manager object (slide 2-54, example 109)
         #self.rm         = ...
         self.sa         = None
         self.sg         = None
@@ -69,10 +68,12 @@ class PA_App(QMainWindow):
         self.h_gui['Ptx'].set_val(self.h_gui['Ptx'].get_val()) #  Update the signal (event)
 
         # Create a widget for the Spectrum Analyzer plot
-        #WSR_5: Create a widget for the Spectrum Analyzer plot (slide 4-23, example 310)
+        #WSR_4: Create a widget for the Spectrum Analyzer plot (slide 4-23, example 310)
         #self.plot_sa        = ...
         #
         #
+        # Change the background color of the plot to white
+        self.plot_sa.set_background_color('w')
 
         # Initilize the freq and power arrays to empty
         self.f_scan = np.array([])
@@ -92,21 +93,21 @@ class PA_App(QMainWindow):
             self.log.info("Connect button Checked")
             # Open the connection to the signal generator
             try:
-                #WSR_6: Obtain the IP values from the GUI
+                #WSR_5: Obtain the IP values from the GUI
                 #ip_sa          = ...
                 #ip_sg          = ...
 
-                #WSR_7: Open the resources for the spectrum analyzer and signal generator (slide 2-54, example 109)
+                #WSR_6: Open the resources for the spectrum analyzer and signal generator (slide 2-54, example 109)
                 #self.sa        = ...
                 #self.sg        = ...
 
-                #WSR_8: Create the arb object (slide 3-51, example 219)
+                #WSR_7: Create the arb object (slide 3-51, example 219)
                 #self.arb       = ...
 
                 self.sa.timeout = 5000
                 self.sg.timeout = 5000
 
-                #WSR_9: Create the SCPIWrapper objects for the spectrum analyzer and signal generator (slide 4-40)
+                #WSR_8: Create the SCPIWrapper objects for the spectrum analyzer and signal generator (slide 4-40)
                 #self.scpi_sa    = ...
                 #self.scpi_sg    = ...
 
@@ -118,7 +119,7 @@ class PA_App(QMainWindow):
                 idn_sg      = ','.join( self.scpi_sg.query("*IDN?").split(',')[1:3])
                 # Remove the firmware revision
                 self.setWindowTitle('SA:' + idn_sa + " | SG:" + idn_sg)
-                #WSR_10: Send reset, clear to both sa and sg (slide 4-11)
+                #WSR_9: Send reset, clear to both sa and sg (slide 4-11)
                 #
                 #
                 #
@@ -176,7 +177,7 @@ class PA_App(QMainWindow):
             self.scpi = None
 
     def cb_ptx(self):
-        #WSR_11: Set the signal generator power level to the value of the dial. Get the ptx from the GUI and send it to the SG
+        #WSR_10: Set the signal generator power level to the value of the dial. Get the ptx from the GUI and send it to the SG
         #
         if self.sg is not None:
             #
@@ -218,9 +219,21 @@ class PA_App(QMainWindow):
         if self.sa is not None:
             # Get the trace from the spectrum analyzer
             trace, freq = self.sa_read_trace()
+            # Check if checkbox of freeze Y axis is checked
+            if self.h_gui['FreezeYAxis'].get_val():
+                # Get the Y axis current limits
+                y_min, y_max = self.plot_sa.get_y_range()
+                # Round to the nearest 10 dB
+                y_min = np.ceil( y_min/10.0)*10.0
+                y_max = np.floor(y_max/10.0)*10.0
+            else:
+                # Set the Y axis limits to the trace
+                y_min = None
+                y_max = None
+
             # Plot the trace
-            # WSR_12: Plot the trace from the spectrum analyzer (slide 4-21, example 310),
-            # set the x and y labels, title, line width to 3.0 and clear the plot
+            # WSR_11: Plot the trace from the spectrum analyzer (slide 4-21, example 310),
+            # set the x and y labels, title, line width to 3.0, y_lim_min and y_lim_max and clear the plot
             #
 
 
@@ -233,14 +246,28 @@ class PA_App(QMainWindow):
         freq_v  = self.f_scan
         power_v = np.concatenate((power, np.ones(len(freq_v)-len(power))*power[0]))
         self.plot_sa.plot( freq_v , power_v,
-                           line=color , line_width=3.0,
+                           line=color , line_width=6.0,
                            xlabel='Frequency (MHz)', ylabel='Power dBm',
                            title='Filter response', xlog=False, clf=clf, legend=legend)
+
+    def tcb_dump_csv(self, freq, gain, op1dB, oip3, oip5):
+        # Create a CSV file name with date and time
+        # Get the current date and time
+        current_time = time.strftime("%Y%m%d_%H%M%S")
+        # Create the CSV file name
+        # Use the current time to create a unique file name
+        csv_file = f"PA_Scan_{current_time}.csv"
+        # Save the data to a CSV file
+        with open(csv_file, "w") as f:
+            f.write("Frequency (MHz), Gain (dB), OP1dB (dBm), OIP3 (dBm), OIP5 (dBm)\n")
+            for i in range(len(freq)):
+                f.write(f"{freq[i]},{gain[i]},{op1dB[i]},{oip3[i]},{oip5[i]}\n")
+        self.log.info(f"Data saved to {csv_file}")
 
     def cb_testpa(self):
         if self.sender().isChecked():
             if self.sa is not None:
-                #WSR_13: Stop the timer (slide 4-23)
+                #WSR_12: Stop the timer (slide 4-23)
                 #
                 self.log.info("Initialize scan params")
                 self.f_scan = np.linspace(self.h_gui['Fstart' ].get_val(),
@@ -248,17 +275,19 @@ class PA_App(QMainWindow):
                                           self.h_gui['Npoints'].get_val())
 
 
-                #WSR_14: Create the thread object and connect it to signals, connect progress to tcb_progress, data to tcb_plot and log to self.log.info
+                #WSR_13: Create the thread object and connect it to signals, connect progress to tcb_progress, data to tcb_plot, log to self.log.info and csv to tcb_dump_csv
                 #self.thread = ...
                 #
                 #
                 #
+                #
                 # Connect to LCD real time display
-                self.thread.lcd_g    .connect(self.h_gui['ScanG'    ].set_val)
-                self.thread.lcd_op1dB.connect(self.h_gui['ScanOP1dB'].set_val)
-                self.thread.lcd_oip3 .connect(self.h_gui['ScanOIP3' ].set_val)
-                self.thread.lcd_oip5 .connect(self.h_gui['ScanOIP5' ].set_val)
-                # WSR_15: Start the thread (slide 4-26)
+                self.thread.lcd_g    .connect(self.h_gui['ScanG'     ].set_val)
+                self.thread.lcd_op1dB.connect(self.h_gui['ScanOP1dB' ].set_val)
+                self.thread.lcd_oip3 .connect(self.h_gui['ScanOIP3'  ].set_val)
+                self.thread.lcd_oip5 .connect(self.h_gui['ScanOIP5'  ].set_val)
+                self.thread.lcd_p_out .connect(self.h_gui['ScanPout' ].set_val)
+                # WSR_14: Start the thread (slide 4-26)
                 #
         else:
             # WS_4: Stop the thread/wait and recall the signal generator and spectrum analyzer state  (slide 4-26, example 310)

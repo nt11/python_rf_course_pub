@@ -1,4 +1,4 @@
-#WKR_1: Import the necessary modules
+#WKR_1: Import the necessary modules (PyQt6.QtCore QThread and pyqtSignal, numpy as np)
 #...
 
 
@@ -6,13 +6,15 @@ class PaScan(QThread):
     # Define signals as class attributes (for progressbar and returned data)
     progress    = pyqtSignal(int)
     data        = pyqtSignal(np.ndarray, np.ndarray, bool, str, str) # freq, power, clf , legend, color
+    csv         = pyqtSignal(np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray) # CSV file name
     log         = pyqtSignal(str)
     # LCD signals
-    #WKR_2: Define the LCD signals
+    #WKR_2: Define the LCD signals (lcd_g, lcd_op1dB, lcd_oip3, lcd_oip5, lcd_p_out)
     #lcd_g      = ...
     #lcd_op1dB  = ...
     #lcd_oip3   = ...
     #lcd_oip5   = ...
+    #lcd_p_out  = ...
 
     def __init__(self, f_scan,scpi_sa, scpi_sg, loss = 0):
         super().__init__()
@@ -48,7 +50,7 @@ class PaScan(QThread):
         #WKR_3: Loop over the scan frequencies, generate both index i and frequency f
         #for ...
             # Set the SG to the frequency of the current scan point and power level
-            p_tx = p_tx_nominal - 5 # Check gain at low power
+            p_tx = p_tx_nominal - 10 # Check gain at low power
             #WK_4: Set the signal generator frequency and power level
             #
             #
@@ -68,7 +70,8 @@ class PaScan(QThread):
             #set_level  = ... (get the current level)
             if set_level != max_level:
                 self.log.emit(f"Thread: Setting reference level to {max_level}")
-                # WBK_2: Set the reference level to the max_level
+                # WKB_2: Set the reference level to the max_level using scpi_sa.write
+                #
 
             # compute the gain and save the frequency and gain
             #WK_7: Compute the gain from the peak value, loss and power level
@@ -78,6 +81,7 @@ class PaScan(QThread):
             # Update the Gain LCD
             #WK_8 Emit a signal to the gain LCD (slide 4-27, example o310)
             #
+            self.lcd_p_out.emit(peak_value + self.loss)
 
 
             # OP1dB
@@ -89,6 +93,7 @@ class PaScan(QThread):
                 #WK_10: Compute the gain from the peak value, loss and power level
                 #gain_i      = ...
                 gain_diff   = gain[-1] - gain_i
+                self.lcd_p_out.emit(peak_value + self.loss)
                 # Check if the gain has dropped by 1 dB
                 if gain_diff >= 1:
                     #WK_11 compute the op1dB from the peak value and loss
@@ -109,16 +114,24 @@ class PaScan(QThread):
             #
             peak_value = self.sa_sweep_marker_max()
             p_i        = peak_value + self.loss
+            # Get the frequency of subcarrier 1
+            freq_sig1  = float(self.scpi_sa.query("CALCulate:MARKer:X?"))
             # Next peak twice (OIP3)
             self.scpi_sa.write("CALCulate:MARKer:MAXimum:NEXT")
-            self.scpi_sa.write("CALCulate:MARKer:MAXimum:NEXT")
+            # Get the frequency of subcarrier 2
+            freq_sig2  = float(self.scpi_sa.query("CALCulate:MARKer:X?"))
+            f_sub_h = max(freq_sig1, freq_sig2)
+            f_sub_l = min(freq_sig1, freq_sig2)
+            # Set the marker to OIP3 (sub_h + (sub_h - sub_l))
+            f_oip3 = f_sub_h + (f_sub_h - f_sub_l)
+            self.scpi_sa.write(f"CALCulate:MARKer:X {f_oip3} Hz")
             # Get the peak value
             # WK_15: Get the peak value from the spectrum analyzer using a SCPI command
             #peak_value = ...
             p_i3        = peak_value + self.loss
             # Next peak twice (OIP5)
-            self.scpi_sa.write("CALCulate:MARKer:MAXimum:NEXT")
-            self.scpi_sa.write("CALCulate:MARKer:MAXimum:NEXT")
+            f_oip5 = f_sub_h + (f_sub_h - f_sub_l)*2
+            self.scpi_sa.write(f"CALCulate:MARKer:X {f_oip5} Hz")
             # Get the peak value
             # WK_16: Get the peak value from the spectrum analyzer using a SCPI command
             #peak_value = ...
@@ -135,8 +148,8 @@ class PaScan(QThread):
             self.lcd_oip5.emit(oip5_i)
 
             # if i%10==0:
-            #WKR_5: Emit the data to the plot widget. emit the gain, op1dB, oip3 and oip5.
-            #clear the plot for the first call and don't clear for the rest
+            #WKR_5: Emit the data to the plot widget. emit the gain, op1dB, oip3 and oip5 using self.data.emit
+            #clear the plot for the first call (use True) and don't clear for the rest (use False), use colors 'k', 'b', 'g', 'r'
             #
             #
             #
@@ -147,19 +160,30 @@ class PaScan(QThread):
             if not self.running:
                 break
 
+        # Dump the data to a CSV file
+        self.csv.emit(freq, gain, op1dB, oip3, oip5)
+
 
     def sa_sweep_marker_max(self):
+        # Set detector to average
+        self.scpi_sa.write("SENSE:DETECTOR AVERage")
+        # Read the Sweep time
+        sweep_time = float(self.scpi_sa.query("SENSE:SWEEP:TIME?"))
+        # call OPC after save
+        self.scpi_sa.query("*OPC?")
+        # Set sweep time to 10x for average detector
+        self.scpi_sa.write(f"SENSE:SWEEP:TIME {sweep_time*10}")
         # WK_17 Initiate a single sweep on the spectrum analyzer using a SCPI command
         #
-        try:
         # WK_18 Check for operation complete using a SCPI command (OPC)
-            #
-        except pyvisa.errors.VisaIOError:
-            self.log.emit(f"Thread: OPC Failed at {f} MHz")
+        #
         # Set marker to peak using a SCPI command
         #
         # Get the peak value
         #peak_value = ...
+        # Set sweep time to auto
+        self.scpi_sa.write("SWEEP:TIME:AUTO ON")
+        self.scpi_sa.query("*OPC?")
 
         return peak_value
 
