@@ -17,13 +17,15 @@ import logging # for pyinstaller
 from python_rf_course_utils.qt import h_gui, PlotWidget, setup_logger
 
 from o310_long_process import LongProcess
+import ipaddress
 
-
+# Validate IP using ipaddress library
 def is_valid_ip(ip:str) -> bool:
-    # Regular expression pattern for matching IP address
-    ip_pattern = r'^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
-    return re.match(ip_pattern, ip) is not None
-
+    try:
+        ipaddress.ip_address(ip)
+        return True
+    except ipaddress.AddressValueError:
+        return False
 
 # Suppress logging of specified modules (only show errors)
 def suppress_external_logging():
