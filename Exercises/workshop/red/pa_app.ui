@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
@@ -112,7 +112,7 @@
         <item row="1" column="0">
          <layout class="QGridLayout" name="gridLayout_4">
           <item row="1" column="0">
-           <widget class="QLineEdit" name="lineEdit"/>
+           <widget class="QLineEdit" name="lineEdit" />
           </item>
           <item row="2" column="1">
            <widget class="QLabel" name="label_2">
@@ -129,7 +129,7 @@
            </widget>
           </item>
           <item row="2" column="0">
-           <widget class="QLineEdit" name="lineEdit_2"/>
+           <widget class="QLineEdit" name="lineEdit_2" />
           </item>
           <item row="0" column="0">
            <widget class="QPushButton" name="pushButton">
@@ -307,34 +307,9 @@
            </widget>
           </item>
           <item row="3" column="2">
-           <widget class="QLabel" name="label_18">
-            <property name="text">
-             <string>0</string>
-            </property>
-           </widget>
-          </item>
+           </item>
           <item row="3" column="1">
-           <widget class="QDial" name="dial">
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>50</height>
-             </size>
-            </property>
-            <property name="minimum">
-             <number>-20</number>
-            </property>
-            <property name="maximum">
-             <number>0</number>
-            </property>
-            <property name="notchTarget">
-             <double>1.000000000000000</double>
-            </property>
-            <property name="notchesVisible">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
+           </item>
           <item row="3" column="3">
            <widget class="QLabel" name="label_20">
             <property name="text">
@@ -427,12 +402,12 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionSave"/>
-    <addaction name="actionLoad"/>
+    <addaction name="actionSave" />
+    <addaction name="actionLoad" />
    </widget>
-   <addaction name="menuFile"/>
+   <addaction name="menuFile" />
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusbar" />
   <action name="actionSave">
    <property name="text">
     <string>Save</string>
@@ -451,7 +426,6 @@
   </action>
  </widget>
  <tabstops>
-  <tabstop>dial</tabstop>
   <tabstop>pushButton</tabstop>
   <tabstop>lineEdit</tabstop>
   <tabstop>lineEdit_2</tabstop>
@@ -461,23 +435,7 @@
   <tabstop>pushButton_2</tabstop>
   <tabstop>textBrowser</tabstop>
  </tabstops>
- <resources/>
+ <resources />
  <connections>
-  <connection>
-   <sender>dial</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>label_18</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>453</x>
-     <y>272</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>453</x>
-     <y>214</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+  </connections>
 </ui>

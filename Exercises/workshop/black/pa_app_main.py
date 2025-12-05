@@ -1,3 +1,13 @@
+# BLACK LEVEL - UI TASKS:
+# Before starting Python code, open pa_app.ui in Qt Designer and add:
+# 1. QDial widget named "dial" for power control (range -20 to 0 dBm)
+# 2. QLabel widget named "label_18" to display dial value
+# 3. Connect dial's valueChanged signal to label_18's setNum slot
+# 4. QLineEdit widgets: lineEdit_3 (Fstart), lineEdit_4 (Fstop), lineEdit_5 (Npoints)
+# 5. QLCDNumber widgets: lcdNumber (Gain), lcdNumber_2 (OP1dB), lcdNumber_3 (OIP3),
+#    lcdNumber_4 (OIP5), lcdNumber_5 (Pout)
+# 6. QPushButton named "pushButton_2" for Test PA
+#
 # WSR_1 Import everything you need (import re, sys, yaml, PyQt6 modules: QApplication, QMainWindow, QVBoxLayout, loadUi, QTimer,
 # numpy, logging, time, pyvisa, pyvisa_py, pyarbtools as arb, and from pa_app_thread import PaScan)
 #

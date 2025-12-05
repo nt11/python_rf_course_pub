@@ -1,3 +1,9 @@
+# RED LEVEL - UI TASKS:
+# Before starting Python code, open pa_app.ui in Qt Designer and add:
+# 1. QDial widget named "dial" for power control (range -20 to 0 dBm)
+# 2. QLabel widget named "label_18" to display dial value
+# 3. Connect dial's valueChanged signal to label_18's setNum slot
+#
 # WSR_1 Import everything you need (import re, sys, yaml, PyQt6 modules: QApplication, QMainWindow, QVBoxLayout, loadUi, QTimer,
 # numpy, logging, time, pyvisa, pyvisa_py, pyarbtools as arb, and from pa_app_thread import PaScan)
 #
