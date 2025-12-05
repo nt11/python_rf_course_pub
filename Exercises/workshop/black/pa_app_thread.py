@@ -85,31 +85,15 @@ class PaScan(QThread):
 
 
             # OP1dB
-            # Slow scan increase power by 0.1 dB Gheck the gain drop until it is 1 dB
-            for p_tx in np.arange(p_tx_nominal - 3, p_tx_nominal + 5, 0.1):
-                #WK_9: Set the signal generator power level to p_tx
-                #
-                peak_value  = self.sa_sweep_marker_max()
-                #WK_10: Compute the gain from the peak value, loss and power level
-                #gain_i      = ...
-                gain_diff   = gain[-1] - gain_i
-                self.lcd_p_out.emit(peak_value + self.loss)
-                # Check if the gain has dropped by 1 dB
-                if gain_diff >= 1:
-                    #WK_11 compute the op1dB from the peak value and loss
-                    #op1dB_i = ...
-                    #WK_12: Append the op1dB_i to the op1dB list
-                    #op1dB = ...
-                    #WK_13: Emit a signal to the OP1dB LCD, (slide 4-27, example o310)
-                    #
-                    break
-            else:
-                op1dB_i = peak_value + self.loss
-                op1dB   = np.append(op1dB, op1dB_i)
-                self.lcd_op1dB.emit(op1dB_i)
+            #WK_9: Call find_op1db_binary_search with range (p_tx_nominal - 6, p_tx_nominal + 5) and gain[-1] as reference
+            #op1dB_i = ...
+            #WK_10: Append the op1dB_i to the op1dB array
+            #op1dB = ...
+            #WK_11: Emit a signal to the OP1dB LCD (slide 4-27, example o310)
+            #
 
             # OIP3 and OIP5
-            # WK_14 Modulation On and tx power to p_tx_nominal on signal generator
+            # WK_12 Modulation On and tx power to p_tx_nominal on signal generator
             #
             #
             peak_value = self.sa_sweep_marker_max()
@@ -126,14 +110,14 @@ class PaScan(QThread):
             f_oip3 = f_sub_h + (f_sub_h - f_sub_l)
             self.scpi_sa.write(f"CALCulate:MARKer:X {f_oip3} Hz")
             # Get the peak value
-            # WK_15: Get the peak value from the spectrum analyzer using a SCPI command
+            # WK_13: Get the peak value from the spectrum analyzer using a SCPI command
             #peak_value = ...
             p_i3        = peak_value + self.loss
             # Next peak twice (OIP5)
             f_oip5 = f_sub_h + (f_sub_h - f_sub_l)*2
             self.scpi_sa.write(f"CALCulate:MARKer:X {f_oip5} Hz")
             # Get the peak value
-            # WK_16: Get the peak value from the spectrum analyzer using a SCPI command
+            # WK_14: Get the peak value from the spectrum analyzer using a SCPI command
             #peak_value = ...
             p_i5        = peak_value + self.loss
 
@@ -163,6 +147,40 @@ class PaScan(QThread):
         # Dump the data to a CSV file
         self.csv.emit(freq, gain, op1dB, oip3, oip5)
 
+    def find_op1db_binary_search(self, p_tx_start, p_tx_end, gain_ref, resolution=0.1):
+        low     = p_tx_start
+        high    = p_tx_end
+        op1dB_i = None
+
+        while high - low > resolution:
+            mid = (low + high) / 2
+
+            # Set the power level and measure gain
+            #WK_17: Set the signal generator power level to mid
+            #
+            peak_value  = self.sa_sweep_marker_max()
+            #WK_18: Compute the gain from the peak value, loss and mid power level
+            #gain_i      = ...
+            gain_diff   = gain_ref - gain_i
+            self.lcd_p_out.emit(peak_value + self.loss)
+
+            # Check if we found the 1dB compression point
+            if gain_diff >= 1:
+                # We've exceeded 1dB compression, search lower
+                high    = mid
+                op1dB_i = peak_value + self.loss
+            else:
+                # Not yet at 1dB compression, search higher
+                low = mid
+
+        # Final measurement at the determined power level
+        if op1dB_i is None:
+            # If we didn't find a point with 1dB compression, use the highest power
+            self.scpi_sg.write(f"POW:LEV {high}")
+            peak_value  = self.sa_sweep_marker_max()
+            op1dB_i     = peak_value + self.loss
+
+        return op1dB_i
 
     def sa_sweep_marker_max(self):
         # Set detector to average
@@ -173,9 +191,9 @@ class PaScan(QThread):
         self.scpi_sa.query("*OPC?")
         # Set sweep time to 10x for average detector
         self.scpi_sa.write(f"SENSE:SWEEP:TIME {sweep_time*10}")
-        # WK_17 Initiate a single sweep on the spectrum analyzer using a SCPI command
+        # WK_15 Initiate a single sweep on the spectrum analyzer using a SCPI command
         #
-        # WK_18 Check for operation complete using a SCPI command (OPC)
+        # WK_16 Check for operation complete using a SCPI command (OPC)
         #
         # Set marker to peak using a SCPI command
         #
