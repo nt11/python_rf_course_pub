@@ -110,7 +110,6 @@ class PaScan(QThread):
             self.lcd_oip3.emit(oip3_i)
             self.lcd_oip5.emit(oip5_i)
 
-            # if i%10==0:
             self.data.emit(freq, gain , True , f"Gain" , 'k')
             self.data.emit(freq, op1dB, False, f"OP1dB", 'b')
             self.data.emit(freq, oip3 , False, f"OIP3" , 'g')

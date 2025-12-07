@@ -1,6 +1,6 @@
 # RED LEVEL - UI TASKS:
 # Before starting Python code, open pa_app.ui in Qt Designer and add:
-# 1. QDial widget named "dial" for power control (range -20 to 0 dBm)
+# 1. QDial widget named "dial" for power control (range -20 to 0 dBm, notchVisible = True, notchTarget = 1)
 # 2. QLabel widget named "label_18" to display dial value
 # 3. Connect dial's valueChanged signal to label_18's setNum slot
 #
@@ -10,7 +10,7 @@
 from python_rf_course_utils.qt import h_gui, PlotWidget, setup_logger
 from python_rf_course_utils.scpi import SCPIWrapper
 from python_rf_course_utils.arb import multitone
-
+import traceback
 
 def is_valid_ip(ip:str) -> bool:
     # Regular expression pattern for matching IP address
@@ -72,7 +72,6 @@ class PA_App(QMainWindow):
         self.h_gui['Save'].emit() #  self.cb_save
         self.h_gui['Ptx'].set_val(self.h_gui['Ptx'].get_val()) #  Update the signal (event)
 
-        # Create a widget for the Spectrum Analyzer plot
         #WSR_4
         #self.plot_sa        = ...
         #
@@ -118,17 +117,19 @@ class PA_App(QMainWindow):
 
                 self.log.info(f"Connected to {ip_sa=} and {ip_sg=}")
 
+                #WSR_9
+                #
+                #
+                #
+                #
+
                 # Query the signal generator name
                 # <company_name>, <model_number>, <serial_number>,<firmware_revision>
                 idn_sa      = ','.join( self.scpi_sa.query("*IDN?").split(',')[1:3])
                 idn_sg      = ','.join( self.scpi_sg.query("*IDN?").split(',')[1:3])
                 # Remove the firmware revision
                 self.setWindowTitle('SA:' + idn_sa + " | SG:" + idn_sg)
-                #WSR_9
-                #
-                #
-                #
-                #
+
 
                 # Load the arb with a two tone signal
 
@@ -159,6 +160,7 @@ class PA_App(QMainWindow):
                 time.sleep(0.01)
             except Exception:
                 self.log.error("Connection failed")
+                self.log.error(traceback.format_exc())
                 if self.sa is not None:
                     self.sa.close()
                     self.sa = None
@@ -235,7 +237,6 @@ class PA_App(QMainWindow):
                 y_min = None
                 y_max = None
 
-            # Plot the trace
             #WSR_11
             #
 

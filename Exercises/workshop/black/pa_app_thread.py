@@ -14,6 +14,7 @@ class PaScan(QThread):
     #lcd_op1dB  = ...
     #lcd_oip3   = ...
     #lcd_oip5   = ...
+    #lcd_oip5   = ...
     #lcd_p_out  = ...
 
     def __init__(self, f_scan,scpi_sa, scpi_sg, loss = 0):
@@ -48,7 +49,7 @@ class PaScan(QThread):
 
         freq    = np.array([])
         #WKR_3
-            # Set the SG to the frequency of the current scan point and power level
+        #
             p_tx = p_tx_nominal - 10 # Check gain at low power
             #WK_4
             #
@@ -129,7 +130,6 @@ class PaScan(QThread):
             self.lcd_oip3.emit(oip3_i)
             self.lcd_oip5.emit(oip5_i)
 
-            # if i%10==0:
             #WKR_5
             #
             #

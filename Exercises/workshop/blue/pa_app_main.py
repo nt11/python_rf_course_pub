@@ -20,6 +20,7 @@ import pyarbtools as arb
 
 import logging
 import time
+import traceback
 
 def is_valid_ip(ip:str) -> bool:
     # Regular expression pattern for matching IP address
@@ -116,6 +117,11 @@ class PA_App(QMainWindow):
                 self.scpi_sg    = SCPIWrapper(instr=self.sg, log= self.log, name='SG')
 
                 self.log.info(f"Connected to {ip_sa=} and {ip_sg=}")
+                # Reset and clear all status (errors) of the spectrum analyzer
+                self.scpi_sa.write("*RST")
+                self.scpi_sa.write("*CLS")
+                self.scpi_sg.write("*RST")
+                self.scpi_sg.write("*CLS")
 
                 # Query the signal generator name
                 # <company_name>, <model_number>, <serial_number>,<firmware_revision>
@@ -123,11 +129,7 @@ class PA_App(QMainWindow):
                 idn_sg      = ','.join( self.scpi_sg.query("*IDN?").split(',')[1:3])
                 # Remove the firmware revision
                 self.setWindowTitle('SA:' + idn_sa + " | SG:" + idn_sg)
-                # Reset and clear all status (errors) of the spectrum analyzer
-                self.scpi_sa.write("*RST")
-                self.scpi_sa.write("*CLS")
-                self.scpi_sg.write("*RST")
-                self.scpi_sg.write("*CLS")
+
                 # Load the arb with a two tone signal
 
 
@@ -157,6 +159,7 @@ class PA_App(QMainWindow):
                 time.sleep(0.01)
             except Exception:
                 self.log.error("Connection failed")
+                self.log.error(traceback.format_exc())
                 if self.sa is not None:
                     self.sa.close()
                     self.sa = None
