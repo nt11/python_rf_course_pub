@@ -1,0 +1,42 @@
+label,todo,reference_slide,reference_exercise
+WK_1,Signal Generator RF Output On,,
+WK_2,"Spectrum Analyzer Detector Average, Trace Mode Write, Single Sweep Mode",,
+WK_3,Get the power level from the signal generator into p_tx_nominal,,
+WK_4,Set the signal generator frequency and power level,,
+WK_5,Set the SA center frequency,,
+WK_6,Set the signal generator modulation off for CW testing,,
+WK_7,"Compute the gain from the peak value, loss and power level",,
+WK_8,Emit a signal to the gain LCD,4-27,o310
+WK_9,"Call find_op1db_binary_search with range (p_tx_nominal - 6, p_tx_nominal + 5) and gain[-1] as reference",,
+WK_10,Append the op1dB_i to the op1dB array,,
+WK_11,Emit a signal to the OP1dB LCD,4-27,o310
+WK_12,Modulation On and tx power to p_tx_nominal on signal generator,,
+WK_13,Get the peak value from the spectrum analyzer using a SCPI command,,
+WK_14,Get the peak value from the spectrum analyzer using a SCPI command,,
+WK_15,Initiate a single sweep on the spectrum analyzer using a SCPI command,,
+WK_16,Check for operation complete using a SCPI command (OPC),,
+WK_17,Set the signal generator power level to mid,,
+WK_18,"Compute the gain from the peak value, loss and mid power level",,
+WKR_1,"Import the necessary modules (PyQt6.QtCore QThread and pyqtSignal, numpy as np)",,
+WKR_2,"Define the LCD signals (lcd_g, lcd_op1dB, lcd_oip3, lcd_oip5, lcd_p_out)",,
+WKR_3,"Loop over the scan frequencies, generate both index i and frequency f",,
+WKR_4,"Compute the OIP3 (p_i is the fundamental power, p_i3 is the 3rd order power)",,
+WKR_5,"Emit the data to the plot widget. emit the gain, op1dB, oip3 and oip5 using self.data.emit",,
+WS_1,"Create a timer for the Spectrum Analyzer plot, connect it to cb_timer_trace and start it for 250ms",4-24,310
+WS_2,configure the multitone for a 2 tone signal with the bandwidth of the PA and the sampling frequency of the arb,,
+WS_3,Save the signal generator and spectrum analyzer state for the spectrum analyzer and signal generator,4-11,
+WS_4,Stop the thread/wait and recall the signal generator and spectrum analyzer state,4-26,310
+WSR_1,"Import everything you need (import re, sys, yaml, PyQt6 modules: QApplication, QMainWindow, QVBoxLayout, loadUi, QTimer,",,
+WSR_2,Set up the logger for the application,4-30,310
+WSR_3,Create the Resource Manager object,2-54,109
+WSR_4,Create a widget for the Spectrum Analyzer plot,4-23,310
+WSR_5,Obtain the IP values from the GUI,,
+WSR_6,Open the resources for the spectrum analyzer and signal generator,2-54,109
+WSR_7,Create the arb object,3-51,219
+WSR_8,Create the SCPIWrapper objects for the spectrum analyzer and signal generator,4-40,
+WSR_9,"Send reset, clear to both sa and sg",4-11,
+WSR_10,Set the signal generator power level to the value of the dial. Get the ptx from the GUI and send it to the SG,,
+WSR_11,Plot the trace from the spectrum analyzer,4-21,310
+WSR_12,Stop the timer,4-23,
+WSR_13,"Create the thread object and connect it to signals, connect progress to tcb_progress, data to tcb_plot, log to self.log.info and csv to tcb_dump_csv",,
+WSR_14,Start the thread,4-26,

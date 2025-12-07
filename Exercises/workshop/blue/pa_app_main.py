@@ -1,5 +1,6 @@
 import re
 
+import  sys
 import  yaml
 from    PyQt6.QtWidgets    import QApplication, QMainWindow, QVBoxLayout
 from    PyQt6.uic          import loadUi
@@ -8,7 +9,7 @@ from    PyQt6.QtCore       import QTimer
 import numpy as np
 
 from python_rf_course_utils.qt import h_gui, PlotWidget, setup_logger
-from python_rf_course_utils.scpi import wrapper
+from python_rf_course_utils.scpi import SCPIWrapper
 from python_rf_course_utils.arb import multitone
 
 from pa_app_thread import PaScan
@@ -50,10 +51,12 @@ class PA_App(QMainWindow):
             Fstart              = h_gui(self.lineEdit_3         , self.cb_scan              ),
             Fstop               = h_gui(self.lineEdit_4         , self.cb_scan              ),
             Npoints             = h_gui(self.lineEdit_5         , self.cb_scan              ),
+            FreezeYAxis         = h_gui(self.checkBox           , None              ),
             ScanG               = h_gui(self.lcdNumber          , None              ),
             ScanOP1dB           = h_gui(self.lcdNumber_2        , None              ),
             ScanOIP3            = h_gui(self.lcdNumber_3        , None              ),
             ScanOIP5            = h_gui(self.lcdNumber_4        , None              ),
+            ScanPout            = h_gui(self.lcdNumber_5        , None              ),
             Save                = h_gui(self.actionSave         , self.cb_save              ),
             Load                = h_gui(self.actionLoad         , self.cb_load              ))
 
@@ -81,13 +84,15 @@ class PA_App(QMainWindow):
         self.plot_sa        = PlotWidget()
         layout              = QVBoxLayout(self.widget)
         layout.addWidget(self.plot_sa)
+        # Change the background color of the plot to white
+        self.plot_sa.set_background_color('w')
 
         # Iinitilize the freq and power arrays to empty
         self.f_scan = np.array([])
         self.Fspan  = None
         self.thread = None
 
-        #WS_1 - Create a timer for the Spectrum Analyzer plot, connect it to cb_timer_trace and start it for 250ms (slide 4-24, example 310)
+        #WS_1
         #
         #
         #
@@ -126,9 +131,7 @@ class PA_App(QMainWindow):
                 # Load the arb with a two tone signal
 
 
-                #WS_2 - configure the multitone for a 2 tone signal with the bandwidth of the PA and the sampling frequency of the arb
-                # and play the signal on the arb (slide 3-51, example 219). Use ArbFd as BW and ArbFS as Fs (from the yaml),
-                # remember that the configure function of the arb object takes the sampling frequency in Hz
+                #WS_2
                 #sig = multitone(...
                 #self.arb.configure(...
                 #self.arb.download_wfm(...
@@ -148,7 +151,7 @@ class PA_App(QMainWindow):
                 # Set the spectrum analyzer center frequency and the signal generator frequency
                 self.scpi_sa.write(f"freq:cent {self.Params['Fnominal']} MHz")
                 self.scpi_sg.write(f"freq {     self.Params['Fnominal']} MHz")
-                # WS_3 Save the signal generator and spectrum analyzer state for the spectrum analyzer and signal generator (slide 4-11)
+                #WS_3
                 #
                 #
                 time.sleep(0.01)
@@ -216,8 +219,22 @@ class PA_App(QMainWindow):
         if self.sa is not None:
             # Get the trace from the spectrum analyzer
             trace, freq = self.sa_read_trace()
+            # Check if checkbox of freeze Y axis is checked
+            if self.h_gui['FreezeYAxis'].get_val():
+                # Get the Y axis current limits
+                y_min, y_max = self.plot_sa.get_y_range()
+                # Round to the nearest 10 dB
+                y_min = np.ceil( y_min/10.0)*10.0
+                y_max = np.floor(y_max/10.0)*10.0
+            else:
+                # Set the Y axis limits to the trace
+                y_min = None
+                y_max = None
+
+
             # Plot the trace
             self.plot_sa.plot(freq, trace, line='b-', line_width=3.0,
+                              y_lim_min=y_min       , y_lim_max=y_max,
                               xlabel='Frequency (MHz)', ylabel='Power dBm',
                               title='Spectrum Analyzer', xlog=False, clf=True)
 
@@ -230,9 +247,23 @@ class PA_App(QMainWindow):
         freq_v  = self.f_scan
         power_v = np.concatenate((power, np.ones(len(freq_v)-len(power))*power[0]))
         self.plot_sa.plot( freq_v , power_v,
-                           line=color , line_width=3.0,
+                           line=color , line_width=6.0,
                            xlabel='Frequency (MHz)', ylabel='Power dBm',
                            title='Filter response', xlog=False, clf=clf, legend=legend)
+
+    def tcb_dump_csv(self, freq, gain, op1dB, oip3, oip5):
+        # Create a CSV file name with date and time
+        # Get the current date and time
+        current_time = time.strftime("%Y%m%d_%H%M%S")
+        # Create the CSV file name
+        # Use the current time to create a unique file name
+        csv_file = f"PA_Scan_{current_time}.csv"
+        # Save the data to a CSV file
+        with open(csv_file, "w") as f:
+            f.write("Frequency (MHz), Gain (dB), OP1dB (dBm), OIP3 (dBm), OIP5 (dBm)\n")
+            for i in range(len(freq)):
+                f.write(f"{freq[i]},{gain[i]},{op1dB[i]},{oip3[i]},{oip5[i]}\n")
+        self.log.info(f"Data saved to {csv_file}")
 
     def cb_testpa(self):
         if self.sender().isChecked():
@@ -249,15 +280,17 @@ class PA_App(QMainWindow):
                 self.thread.progress.connect(self.tcb_progress  )
                 self.thread.data    .connect(self.tcb_plot      )
                 self.thread.log     .connect(self.log.info      )
+                self.thread.csv     .connect(self.tcb_dump_csv  )
                 # Connect to LCD real time display
-                self.thread.lcd_g    .connect(self.h_gui['ScanG'    ].set_val)
-                self.thread.lcd_op1dB.connect(self.h_gui['ScanOP1dB'].set_val)
-                self.thread.lcd_oip3 .connect(self.h_gui['ScanOIP3' ].set_val)
-                self.thread.lcd_oip5 .connect(self.h_gui['ScanOIP5' ].set_val)
+                self.thread.lcd_g    .connect(self.h_gui['ScanG'     ].set_val)
+                self.thread.lcd_op1dB.connect(self.h_gui['ScanOP1dB' ].set_val)
+                self.thread.lcd_oip3 .connect(self.h_gui['ScanOIP3'  ].set_val)
+                self.thread.lcd_oip5 .connect(self.h_gui['ScanOIP5'  ].set_val)
+                self.thread.lcd_p_out .connect(self.h_gui['ScanPout' ].set_val)
 
                 self.thread.start() # Start the thread calling the run method
         else:
-            # WS_4: Stop the thread/wait and recall the signal generator and spectrum analyzer state  (slide 4-26, example 310)
+            #WS_4
             self.log.info("Stop the thread")
             if self.thread is not None:
                 #

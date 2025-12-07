@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>750</width>
+    <width>715</width>
     <height>509</height>
    </rect>
   </property>
@@ -72,6 +72,12 @@
             </property>
            </widget>
           </item>
+          <item row="1" column="1">
+           </item>
+          <item row="2" column="1">
+           </item>
+          <item row="3" column="1">
+           </item>
           <item row="0" column="0">
            <widget class="QLabel" name="label_8">
             <property name="text">
@@ -91,7 +97,7 @@
         <item row="1" column="0">
          <layout class="QGridLayout" name="gridLayout_4">
           <item row="1" column="0">
-           <widget class="QLineEdit" name="lineEdit"/>
+           <widget class="QLineEdit" name="lineEdit" />
           </item>
           <item row="2" column="1">
            <widget class="QLabel" name="label_2">
@@ -108,7 +114,7 @@
            </widget>
           </item>
           <item row="2" column="0">
-           <widget class="QLineEdit" name="lineEdit_2"/>
+           <widget class="QLineEdit" name="lineEdit_2" />
           </item>
           <item row="0" column="0">
            <widget class="QPushButton" name="pushButton">
@@ -122,26 +128,21 @@
           </item>
          </layout>
         </item>
+        <item row="0" column="3">
+         </item>
         <item row="1" column="7">
          <layout class="QGridLayout" name="gridLayout_6">
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_12">
-            <property name="text">
-             <string>OIP5</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QLabel" name="label_13">
-            <property name="text">
-             <string>dB</string>
-            </property>
-           </widget>
-          </item>
           <item row="2" column="0">
            <widget class="QLabel" name="label_11">
             <property name="text">
              <string>OIP3</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QLabel" name="label_15">
+            <property name="text">
+             <string>dBm</string>
             </property>
            </widget>
           </item>
@@ -166,13 +167,14 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="2">
-           <widget class="QLabel" name="label_15">
-            <property name="text">
-             <string>dBm</string>
-            </property>
-           </widget>
-          </item>
+          <item row="2" column="1">
+           </item>
+          <item row="3" column="1">
+           </item>
+          <item row="0" column="1">
+           </item>
+          <item row="1" column="1">
+           </item>
           <item row="3" column="2">
            <widget class="QLabel" name="label_16">
             <property name="text">
@@ -180,18 +182,35 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="1">
-           <spacer name="horizontalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_12">
+            <property name="text">
+             <string>OIP5</string>
             </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="label_13">
+            <property name="text">
+             <string>dB</string>
             </property>
-           </spacer>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           </item>
+          <item row="4" column="2">
+           <widget class="QLabel" name="label_21">
+            <property name="text">
+             <string>dBm</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_22">
+            <property name="text">
+             <string>Pout</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -232,10 +251,21 @@
         </item>
         <item row="1" column="5">
          <layout class="QGridLayout" name="gridLayout_5">
-          <item row="0" column="3">
-           <widget class="Line" name="line_8">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+          <item row="1" column="1">
+           <widget class="QLabel" name="label_19">
+            <property name="text">
+             <string>Set Nominal Power</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="2">
+           </item>
+          <item row="3" column="1">
+           </item>
+          <item row="3" column="3">
+           <widget class="QLabel" name="label_20">
+            <property name="text">
+             <string>dBm</string>
             </property>
            </widget>
           </item>
@@ -253,30 +283,10 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="2">
-           <spacer name="horizontalSpacer">
+          <item row="0" column="3">
+           <widget class="Line" name="line_8">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLabel" name="label_19">
-            <property name="text">
-             <string>Set Nominal Power</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="3">
-           <widget class="QLabel" name="label_20">
-            <property name="text">
-             <string>dBm</string>
             </property>
            </widget>
           </item>
@@ -299,6 +309,13 @@
          <widget class="Line" name="line_5">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="5">
+         <widget class="QCheckBox" name="checkBox">
+          <property name="text">
+           <string>Freeze Y-Axis</string>
           </property>
          </widget>
         </item>
@@ -329,20 +346,20 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>750</width>
-     <height>24</height>
+     <width>715</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionSave"/>
-    <addaction name="actionLoad"/>
+    <addaction name="actionSave" />
+    <addaction name="actionLoad" />
    </widget>
-   <addaction name="menuFile"/>
+   <addaction name="menuFile" />
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusbar" />
   <action name="actionSave">
    <property name="text">
     <string>Save</string>
@@ -360,6 +377,13 @@
    </property>
   </action>
  </widget>
- <resources/>
- <connections/>
+ <tabstops>
+  <tabstop>pushButton</tabstop>
+  <tabstop>lineEdit</tabstop>
+  <tabstop>lineEdit_2</tabstop>
+  <tabstop>textBrowser</tabstop>
+ </tabstops>
+ <resources />
+ <connections>
+  </connections>
 </ui>

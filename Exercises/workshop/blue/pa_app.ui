@@ -73,13 +73,25 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QLineEdit" name="lineEdit_3"/>
+           <widget class="QLineEdit" name="lineEdit_3">
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QLineEdit" name="lineEdit_4"/>
+           <widget class="QLineEdit" name="lineEdit_4">
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
           </item>
           <item row="3" column="1">
-           <widget class="QLineEdit" name="lineEdit_5"/>
+           <widget class="QLineEdit" name="lineEdit_5">
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
           </item>
           <item row="0" column="0">
            <widget class="QLabel" name="label_8">
@@ -143,24 +155,17 @@
         </item>
         <item row="1" column="7">
          <layout class="QGridLayout" name="gridLayout_6">
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_12">
-            <property name="text">
-             <string>OIP5</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QLabel" name="label_13">
-            <property name="text">
-             <string>dB</string>
-            </property>
-           </widget>
-          </item>
           <item row="2" column="0">
            <widget class="QLabel" name="label_11">
             <property name="text">
              <string>OIP3</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QLabel" name="label_15">
+            <property name="text">
+             <string>dBm</string>
             </property>
            </widget>
           </item>
@@ -185,17 +190,17 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="2">
-           <widget class="QLabel" name="label_15">
-            <property name="text">
-             <string>dBm</string>
+          <item row="2" column="1">
+           <widget class="QLCDNumber" name="lcdNumber_3">
+            <property name="digitCount">
+             <number>4</number>
             </property>
            </widget>
           </item>
-          <item row="3" column="2">
-           <widget class="QLabel" name="label_16">
-            <property name="text">
-             <string>dBm</string>
+          <item row="3" column="1">
+           <widget class="QLCDNumber" name="lcdNumber_4">
+            <property name="digitCount">
+             <number>4</number>
             </property>
            </widget>
           </item>
@@ -213,17 +218,45 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="1">
-           <widget class="QLCDNumber" name="lcdNumber_3">
+          <item row="3" column="2">
+           <widget class="QLabel" name="label_16">
+            <property name="text">
+             <string>dBm</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_12">
+            <property name="text">
+             <string>OIP5</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="label_13">
+            <property name="text">
+             <string>dB</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLCDNumber" name="lcdNumber_5">
             <property name="digitCount">
              <number>4</number>
             </property>
            </widget>
           </item>
-          <item row="3" column="1">
-           <widget class="QLCDNumber" name="lcdNumber_4">
-            <property name="digitCount">
-             <number>4</number>
+          <item row="4" column="2">
+           <widget class="QLabel" name="label_21">
+            <property name="text">
+             <string>dBm</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_22">
+            <property name="text">
+             <string>Pout</string>
             </property>
            </widget>
           </item>
@@ -289,10 +322,10 @@
              </size>
             </property>
             <property name="minimum">
-             <number>-25</number>
+             <number>-20</number>
             </property>
             <property name="maximum">
-             <number>-5</number>
+             <number>0</number>
             </property>
             <property name="notchTarget">
              <double>1.000000000000000</double>
@@ -349,6 +382,13 @@
          <widget class="Line" name="line_5">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="5">
+         <widget class="QCheckBox" name="checkBox">
+          <property name="text">
+           <string>Freeze Y-Axis</string>
           </property>
          </widget>
         </item>
@@ -410,6 +450,17 @@
    </property>
   </action>
  </widget>
+ <tabstops>
+  <tabstop>dial</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>lineEdit</tabstop>
+  <tabstop>lineEdit_2</tabstop>
+  <tabstop>lineEdit_3</tabstop>
+  <tabstop>lineEdit_4</tabstop>
+  <tabstop>lineEdit_5</tabstop>
+  <tabstop>pushButton_2</tabstop>
+  <tabstop>textBrowser</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
