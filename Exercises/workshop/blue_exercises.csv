@@ -4,20 +4,21 @@ WK_2,"Spectrum Analyzer Detector Average, Trace Mode Write, Single Sweep Mode",,
 WK_3,Get the power level from the signal generator into p_tx_nominal,,
 WK_4,Set the signal generator frequency and power level,,
 WK_5,Set the SA center frequency,,
-WK_6,Set the signal generator modulation off for CW testing,,
-WK_7,"Compute the gain from the peak value, loss and power level",,
+WK_6,Set the signal generator modulation off for CW testing, do OPC
+WK_7,Compute the small signal gain from the peak value, loss and power level,,
 WK_8,Emit a signal to the gain LCD,4-27,o310
 WK_9,"Call find_op1db_binary_search with range (p_tx_nominal - 6, p_tx_nominal + 5) and gain[-1] as reference",,
 WK_10,Append the op1dB_i to the op1dB array,,
 WK_11,Emit a signal to the OP1dB LCD,4-27,o310
 WK_12,Modulation On and tx power to p_tx_nominal on signal generator,,
-WK_13,Get the peak value from the spectrum analyzer using a SCPI command,,
-WK_14,Get the peak value from the spectrum analyzer using a SCPI command,,
-WK_15,Initiate a single sweep on the spectrum analyzer using a SCPI command,,
-WK_16,Check for operation complete using a SCPI command (OPC),,
+WK_13,Get the marker y value (IM3) from the spectrum analyzer using a SCPI command,,
+WK_14,Get the marker y value (IM5) from the spectrum analyzer using a SCPI command,,
+WK_15,Initiate a single sweep on the spectrum analyzer using a SCPI command and do OPC,,
+WK_16,Set the marker to peak and get the peak value,,
 WK_17,Set the signal generator power level to mid,,
 WK_18,"Compute the gain from the peak value, loss and mid power level",,
 WS_1,"Create a timer for the Spectrum Analyzer plot, connect it to cb_timer_trace and start it for 250ms",4-24,310
 WS_2,configure the multitone for a 2 tone signal with the bandwidth of the PA and the sampling frequency of the arb,,
 WS_3,Save the signal generator and spectrum analyzer state for the spectrum analyzer and signal generator,4-11,
 WS_4,Stop the thread/wait and recall the signal generator and spectrum analyzer state,4-26,310
+WS_5,Recall signal generator and spectrum analyzer state and start the timer,4-12 and 4-24,310

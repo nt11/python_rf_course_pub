@@ -296,7 +296,7 @@ class PA_App(QMainWindow):
                 #
                 #
                 self.thread = None
-                # Recall signal generator and spectrum analyzer state (slide 4-12) and start the timer (slide 4-24, example 310)
+                #WS_5
                 #
                 #
                 #

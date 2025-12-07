@@ -193,6 +193,7 @@ class PA_App(QMainWindow):
         #
         if self.sg is not None:
             #
+            pass
 
 
     # Callback function for the IP lineEdit
@@ -252,6 +253,7 @@ class PA_App(QMainWindow):
     def tcb_progress(self, i):
         #WSB_6
         #
+        pass
 
     # thread callback functions
     def tcb_plot(self, freq, power, clf= True,legend='Gain',color='b-'):
@@ -306,7 +308,7 @@ class PA_App(QMainWindow):
                 #
                 #
                 self.thread = None
-                # Recall signal generator and spectrum analyzer state (slide 4-12) and start the timer (slide 4-24, example 310)
+                #WS_5
                 #
                 #
                 #

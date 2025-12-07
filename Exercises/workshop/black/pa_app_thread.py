@@ -72,15 +72,14 @@ class PaScan(QThread):
                 #WKB_2
                 #
 
-            # compute the gain and save the frequency and gain
             #WK_7
-            #gain_i = ...
-            gain = np.append(gain, gain_i)
+            #
+            gain = np.append(gain, small_signal_gain)
             freq  = np.append(freq, f)
-            # Update the Gain LCD
+
             #WK_8
             #
-            self.lcd_p_out.emit(peak_value + self.loss)
+            self.lcd_p_out.emit(marker_y_value + self.loss)
 
 
             # OP1dB
@@ -95,8 +94,8 @@ class PaScan(QThread):
             #WK_12
             #
             #
-            peak_value = self.sa_sweep_marker_max()
-            p_i        = peak_value + self.loss
+            subcarrier_power = self.sa_sweep_marker_max()
+            p_i        = subcarrier_power + self.loss
             # Get the frequency of subcarrier 1
             freq_sig1  = float(self.scpi_sa.query("CALCulate:MARKer:X?"))
             # Next peak twice (OIP3)
@@ -110,15 +109,15 @@ class PaScan(QThread):
             self.scpi_sa.write(f"CALCulate:MARKer:X {f_oip3} Hz")
             # Get the peak value
             #WK_13
-            #peak_value = ...
-            p_i3        = peak_value + self.loss
+            #marker_y_value = ...
+            p_i3        = marker_y_value + self.loss
             # Next peak twice (OIP5)
             f_oip5 = f_sub_h + (f_sub_h - f_sub_l)*2
             self.scpi_sa.write(f"CALCulate:MARKer:X {f_oip5} Hz")
             # Get the peak value
             #WK_14
-            #peak_value = ...
-            p_i5        = peak_value + self.loss
+            #marker_y_value = ...
+            p_i5        = marker_y_value + self.loss
 
             #WKR_4
             #oip3_i = ...
@@ -145,7 +144,18 @@ class PaScan(QThread):
         # Dump the data to a CSV file
         self.csv.emit(freq, gain, op1dB, oip3, oip5)
 
-    def find_op1db_binary_search(self, p_tx_start, p_tx_end, gain_ref, resolution=0.1):
+    def find_op1db_binary_search(self, p_tx_start, p_tx_end, small_signal_gain, resolution=0.1):
+        '''
+        Perform a binary search to find the 1dB compression point.
+        Args:
+            p_tx_start: starting power to search in dBm
+            p_tx_end: ending power to search in dBm
+            small_signal_gain: small signal gain at the frequency in dB
+            resolution: stop criteria in dB
+
+        Returns: Output power at 1dB compression point in dBm
+
+        '''
         low     = p_tx_start
         high    = p_tx_end
         op1dB_i = None
@@ -159,7 +169,7 @@ class PaScan(QThread):
             peak_value  = self.sa_sweep_marker_max()
             #WK_18
             #gain_i      = ...
-            gain_diff   = gain_ref - gain_i
+            gain_diff   = small_signal_gain - gain_i
             self.lcd_p_out.emit(peak_value + self.loss)
 
             # Check if we found the 1dB compression point
@@ -181,6 +191,12 @@ class PaScan(QThread):
         return op1dB_i
 
     def sa_sweep_marker_max(self):
+        '''
+        Perform a single sweep on the spectrum analyzer with average detector
+        and return the peak marker value.
+        Returns: Peak marker value in dBm
+        '''
+
         # Set detector to average
         self.scpi_sa.write("SENSE:DETECTOR AVERage")
         # Read the Sweep time
@@ -193,9 +209,6 @@ class PaScan(QThread):
         #
         #WK_16
         #
-        # Set marker to peak using a SCPI command
-        #
-        # Get the peak value
         #peak_value = ...
         # Set sweep time to auto
         self.scpi_sa.write("SWEEP:TIME:AUTO ON")
