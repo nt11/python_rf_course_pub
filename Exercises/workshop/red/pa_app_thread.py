@@ -77,7 +77,7 @@ class PaScan(QThread):
 
             #WK_8
             #
-            self.lcd_p_out.emit(marker_y_value + self.loss)
+            self.lcd_p_out.emit(peak_value + self.loss)
 
 
             # OP1dB

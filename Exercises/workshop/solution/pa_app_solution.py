@@ -28,7 +28,7 @@ def is_valid_ip(ip:str) -> bool:
     return re.match(ip_pattern, ip) is not None
 
 
-# The GUI controller clas inherit from QMainWindow object as defined in the ui file
+# The GUI controller class inherits from QMainWindow object as defined in the ui file
 class PA_App(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -90,7 +90,7 @@ class PA_App(QMainWindow):
         # Change the background color of the plot to white
         self.plot_sa.set_background_color('w')
 
-        # Iinitilize the freq and power arrays to empty
+        # Initialize the freq and power arrays to empty
         self.f_scan = np.array([])
         self.Fspan  = None
         self.thread = None
