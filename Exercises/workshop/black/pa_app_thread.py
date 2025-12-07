@@ -64,7 +64,6 @@ class PaScan(QThread):
             # Get the peak value
             peak_value = self.sa_sweep_marker_max()
 
-            # Set the reference level
             #WKB_1
             #max_level  = ...
             #set_level  = ... (get the current level)

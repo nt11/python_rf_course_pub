@@ -149,7 +149,6 @@ class PA_App(QMainWindow):
                 #self.arb.play(...
 
 
-                # Set the signal generator to output power
                 #WSB_2
                 #
                 #WSB_3
