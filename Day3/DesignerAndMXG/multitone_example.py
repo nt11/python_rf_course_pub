@@ -66,6 +66,7 @@ def main():
 
     # Signal parameters
     CENTER_FREQ = 1e9          # Center frequency: 1 GHz
+    OUTPUT_POWER = -20         # Output power: -20 dBm
     SAMPLING_FREQ = 20e6       # Sampling frequency: 20 MHz (in Hz)
     SAMPLING_FREQ_MHZ = 20.0   # Sampling frequency: 20 MHz (for multitone function)
 
@@ -150,6 +151,10 @@ def main():
     sig_gen.set_fs(SAMPLING_FREQ)
     print(f"  ✓ Sampling frequency: {SAMPLING_FREQ/1e6} MHz")
 
+    # Set output power
+    sig_gen.write(f":POWER {OUTPUT_POWER}dBm")
+    print(f"  ✓ Output power: {OUTPUT_POWER} dBm")
+
     # Turn off Automatic Level Control (ALC)
     # CRITICAL: Use integer 0/1, NOT boolean False/True!
     sig_gen.set_alcState(0)
@@ -172,6 +177,7 @@ def main():
     print("=" * 60)
     print("\nSignal Configuration:")
     print(f"  Center Frequency:    {CENTER_FREQ/1e9} GHz")
+    print(f"  Output Power:        {OUTPUT_POWER} dBm")
     print(f"  Sampling Frequency:  {SAMPLING_FREQ/1e6} MHz")
     print(f"  Bandwidth:           {BANDWIDTH_MHZ} MHz")
     print(f"  Number of Tones:     {NUM_TONES}")
