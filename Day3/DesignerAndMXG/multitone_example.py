@@ -151,14 +151,22 @@ def main():
     sig_gen.set_fs(SAMPLING_FREQ)
     print(f"  ✓ Sampling frequency: {SAMPLING_FREQ/1e6} MHz")
 
-    # Set output power
-    sig_gen.write(f":POWER {OUTPUT_POWER}dBm")
+    # Set output power using SCPI command via pyarbtools
+    sig_gen.write(f":POWER {OUTPUT_POWER} dBm")
     print(f"  ✓ Output power: {OUTPUT_POWER} dBm")
 
     # Turn off Automatic Level Control (ALC)
     # CRITICAL: Use integer 0/1, NOT boolean False/True!
     sig_gen.set_alcState(0)
     print("  ✓ ALC: OFF")
+
+    # Enable RF output
+    sig_gen.write(":OUTPUT:STATE ON")
+    print("  ✓ RF output: ON")
+
+    # Enable modulation output
+    sig_gen.write(":OUTPUT:MOD:STATE ON")
+    print("  ✓ Modulation: ON")
 
     # ========================================
     # Step 6: Play the Waveform
