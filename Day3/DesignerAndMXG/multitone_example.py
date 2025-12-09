@@ -7,15 +7,53 @@ This example demonstrates how to:
 3. Download the waveform to the ARB
 4. Play the signal
 
+This is a completely standalone example with no external dependencies
+beyond pyarbtools and numpy.
+
 Requirements:
 - pyarbtools library
-- python_rf_course_utils library
+- numpy
 - MXG signal generator accessible on network
 """
 
+from typing import Tuple
 import numpy as np
 import pyarbtools as arb
-from python_rf_course_utils.arb import multitone
+
+
+def multitone(BW: float, Ntones: int, Fs: float, Nfft: int = 4096, DEBUG=False) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    '''
+    Design a multi-tone signal in the frequency domain and return the time domain signal.
+    Flat amplitude symmetrical around DC.
+
+    :param BW: Bandwidth in MHz
+    :param Ntones: Number of tones to generate
+    :param Fs: Sampling frequency in MHz
+    :param Nfft: FFT size (default 4096)
+    :param DEBUG: If True, return (x, X, F). If False, return only x
+    :return: x - Periodic time domain multi-tone signal, X - frequency domain, F - Frequency vector
+    '''
+    # Generate the frequency vector (symmetric around DC)
+    f = np.linspace(-BW / 2, BW / 2, Ntones)
+    # Generate the amplitude vector
+    A = np.ones(Ntones)
+    # Generate a random phase vector
+    phi = np.random.rand(Ntones) * 2 * np.pi
+    # Initialize the frequency domain vector to zeros
+    X = np.zeros(Nfft, dtype=complex)
+    # Generate the frequency domain signal (with frequency f rounded to the nearest bin)
+    for i in range(Ntones):
+        # Calculate the bin index for the frequency f[i] while the DC bin is at the center
+        bin_index = int(np.round(f[i] / Fs * Nfft)) + Nfft // 2
+        # Set the amplitude and phase
+        X[bin_index] = A[i] * np.exp(1j * phi[i])
+    # Generate the time domain signal
+    x = np.fft.ifft(np.fft.ifftshift(X))
+    if DEBUG:
+        F = -Fs / 2 + Fs / Nfft * np.arange(Nfft)
+        return x / np.max(np.abs(x)), X, F
+    else:
+        return x / np.max(np.abs(x))
 
 
 def main():
