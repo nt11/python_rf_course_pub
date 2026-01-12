@@ -39,6 +39,11 @@ hidden_imports = [
     'numpy.core._methods',
     'numpy.lib',
     'numpy.lib.format',
+    'scipy',
+    'scipy.signal',
+    'scipy.special',
+    'scipy.sparse',
+    'scipy.fft',
     'matplotlib',
     'matplotlib.pyplot',
     'matplotlib.backends',
@@ -70,14 +75,14 @@ a = Analysis(
     excludes=[
         # Exclude GUI frameworks we don't need
         'tkinter',
-        # NOTE: matplotlib and PIL are required by pyarbtools.wfmBuilder
+        # NOTE: matplotlib, PIL, and scipy are required by pyarbtools.wfmBuilder
         'PyQt5',
         'PyQt6',
         'PySide2',
         'PySide6',
         # Exclude other large packages we don't use
         'pandas',
-        'scipy',
+        # scipy is needed by pyarbtools.wfmBuilder
         'IPython',
         'jupyter',
         'notebook',
