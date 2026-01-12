@@ -84,10 +84,9 @@ def test_signal_generator(sg_ip: str, results: TestResult) -> Optional[object]:
 
         # Test 1: Reset and Clear
         print("\n[2] Resetting and clearing instrument...")
-        sg.write('*RST')
-        time.sleep(0.5)  # Give time for reset
+        sg.write('*RST;*OPC?')
+        sg.read()  # Wait for reset to complete
         sg.write('*CLS')
-        time.sleep(0.2)
         results.add_pass("Reset (*RST) and Clear (*CLS)")
         check_scpi_errors(sg, "Signal Generator", results)
 
@@ -111,14 +110,14 @@ def test_signal_generator(sg_ip: str, results: TestResult) -> Optional[object]:
         print("\n[4] Testing frequency and power control...")
 
         # Turn modulation off first
-        sg.write(':OUTPUT:MOD:STATE OFF')
-        time.sleep(0.1)
+        sg.write(':OUTPUT:MOD:STATE OFF;*OPC?')
+        sg.read()  # Wait for operation to complete
         check_scpi_errors(sg, "Signal Generator", results)
 
         # Test frequency
         test_freq = 2.5e9  # 2.5 GHz
-        sg.write(f':FREQ:CW {test_freq}')
-        time.sleep(0.1)
+        sg.write(f':FREQ:CW {test_freq};*OPC?')
+        sg.read()  # Wait for operation to complete
         freq_read = float(sg.query(':FREQ:CW?').strip())
         if abs(freq_read - test_freq) < 1e3:  # Within 1 kHz tolerance
             results.add_pass(f"Frequency write/query (set: {test_freq/1e9:.3f} GHz, read: {freq_read/1e9:.3f} GHz)")
@@ -129,8 +128,8 @@ def test_signal_generator(sg_ip: str, results: TestResult) -> Optional[object]:
 
         # Test power
         test_power = -10  # dBm
-        sg.write(f':POWER {test_power}')
-        time.sleep(0.1)
+        sg.write(f':POWER {test_power};*OPC?')
+        sg.read()  # Wait for operation to complete
         power_read = float(sg.query(':POWER?').strip())
         if abs(power_read - test_power) < 0.1:  # Within 0.1 dB tolerance
             results.add_pass(f"Power write/query (set: {test_power} dBm, read: {power_read:.1f} dBm)")
@@ -155,8 +154,8 @@ def test_signal_generator(sg_ip: str, results: TestResult) -> Optional[object]:
 
         # Delete any existing test waveform
         try:
-            sg.write(':MEM:DEL "TEST_WFM"')
-            time.sleep(0.1)
+            sg.write(':MEM:DEL "TEST_WFM";*OPC?')
+            sg.read()  # Wait for operation to complete
         except:
             pass  # Ignore if waveform doesn't exist
 
@@ -175,7 +174,7 @@ def test_signal_generator(sg_ip: str, results: TestResult) -> Optional[object]:
                                iq_interleaved,
                                datatype='f',
                                is_big_endian=False)
-        time.sleep(0.2)
+        sg.query('*OPC?')  # Wait for waveform download to complete
 
         load_time = time.time() - start_time
 
@@ -228,10 +227,9 @@ def test_spectrum_analyzer(sa_ip: str, results: TestResult) -> Optional[object]:
 
         # Test 1: Reset and Clear
         print("\n[2] Resetting and clearing instrument...")
-        sa.write('*RST')
-        time.sleep(1.0)  # SA reset may take longer
+        sa.write('*RST;*OPC?')
+        sa.read()  # Wait for reset to complete
         sa.write('*CLS')
-        time.sleep(0.2)
         results.add_pass("Reset (*RST) and Clear (*CLS)")
         check_scpi_errors(sa, "Spectrum Analyzer", results)
 
@@ -259,7 +257,7 @@ def test_spectrum_analyzer(sa_ip: str, results: TestResult) -> Optional[object]:
         sa.write(':FREQ:SPAN 100 MHz')
         sa.write(':BAND:RES 1 MHz')
         sa.write(':SWE:POIN 401')  # Fewer points for faster sweep
-        time.sleep(0.2)
+        sa.query('*OPC?')  # Wait for configuration to complete
         check_scpi_errors(sa, "Spectrum Analyzer", results)
 
         # Read back settings
