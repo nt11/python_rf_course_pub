@@ -33,11 +33,18 @@ hidden_imports = [
     'pyarbtools.instruments',
     'pyarbtools.communications',
     'pyarbtools.error',
+    'pyarbtools.wfmBuilder',
     'numpy',
     'numpy.core',
     'numpy.core._methods',
     'numpy.lib',
     'numpy.lib.format',
+    'matplotlib',
+    'matplotlib.pyplot',
+    'matplotlib.backends',
+    'matplotlib.backends.backend_agg',
+    'PIL',
+    'PIL.Image',
     'typing_extensions',
     'socketscpi',
 ] + pyvisa_hiddenimports + pyvisa_py_hiddenimports + pyarbtools_hiddenimports
@@ -63,8 +70,7 @@ a = Analysis(
     excludes=[
         # Exclude GUI frameworks we don't need
         'tkinter',
-        'matplotlib',
-        'PIL',
+        # NOTE: matplotlib and PIL are required by pyarbtools.wfmBuilder
         'PyQt5',
         'PyQt6',
         'PySide2',
