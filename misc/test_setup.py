@@ -13,6 +13,7 @@ import pyvisa
 import numpy as np
 import time
 from typing import Tuple, Optional
+import pyarbtools as arb
 
 
 class TestResult:
@@ -138,58 +139,51 @@ def test_signal_generator(sg_ip: str, results: TestResult) -> Optional[object]:
                            f"Mismatch - set: {test_power} dBm, read: {power_read:.1f} dBm")
         check_scpi_errors(sg, "Signal Generator", results)
 
-        # Test 4: ARB functionality
+        # Test 4: ARB functionality using pyarbtools
         print("\n[5] Testing ARB functionality...")
         start_time = time.time()
 
-        # Generate a simple test waveform (100 samples)
-        test_wfm_length = 100
-        i_data = np.sin(2 * np.pi * np.arange(test_wfm_length) / 10) * 0.5
-        q_data = np.cos(2 * np.pi * np.arange(test_wfm_length) / 10) * 0.5
-
-        # Interleave I and Q data
-        iq_interleaved = np.empty(test_wfm_length * 2, dtype=np.float32)
-        iq_interleaved[0::2] = i_data
-        iq_interleaved[1::2] = q_data
-
-        # Delete any existing test waveform
         try:
-            sg.write(':MEM:DEL "TEST_WFM"')
-            sg.query('*OPC?')  # Wait for operation to complete
-        except:
-            pass  # Ignore if waveform doesn't exist
+            # Generate a simple test waveform (1000 samples)
+            test_wfm_length = 1000
+            i_data = np.sin(2 * np.pi * np.arange(test_wfm_length) / 10) * 0.5
+            q_data = np.cos(2 * np.pi * np.arange(test_wfm_length) / 10) * 0.5
+            iq_data = i_data + 1j * q_data
 
-        # Select internal memory
-        sg.write(':MEM:SEL "INT"')
+            # Create ARB object using pyarbtools
+            arb_gen = arb.instruments.VSG(sg_ip, timeout=5)
 
-        # Set binary transfer format
-        sg.write(':FORM:DATA REAL,32')
+            # Configure ARB
+            test_fs = 20e6  # 20 MHz sampling frequency
+            arb_gen.configure(fs=test_fs, iqScale=70)
 
-        # Build binary block
-        data_bytes = iq_interleaved.tobytes()
-        header = f'#{len(str(len(data_bytes)))}{len(data_bytes)}'
+            # Download waveform
+            arb_gen.download_wfm(iq_data, wfmID='TEST_WFM')
 
-        # Download waveform
-        sg.write_binary_values(':MEM:DATA "TEST_WFM",',
-                               iq_interleaved,
-                               datatype='f',
-                               is_big_endian=False)
-        sg.query('*OPC?')  # Wait for waveform download to complete
+            load_time = time.time() - start_time
 
-        load_time = time.time() - start_time
+            # Set basic parameters
+            arb_gen.set_cf(2.5e9)  # 2.5 GHz center frequency
+            arb_gen.set_fs(test_fs)
+            arb_gen.set_alcState(0)  # ALC off
 
-        # Check if waveform was loaded
-        wfm_list = sg.query(':MEM:CAT?').strip()
-        if 'TEST_WFM' in wfm_list:
+            # Verify waveform is loaded by trying to play it
+            arb_gen.play('TEST_WFM')
+
             if load_time < 5.0:  # Should load in less than 5 seconds for small waveform
-                results.add_pass(f"ARB waveform download (load time: {load_time:.2f}s)")
+                results.add_pass(f"ARB waveform download and configuration (load time: {load_time:.2f}s)")
             else:
                 results.add_warning(f"ARB waveform loaded but slow (load time: {load_time:.2f}s)")
-                results.add_pass("ARB waveform download (slow)")
-        else:
-            results.add_fail("ARB waveform download", "Waveform not found in memory")
+                results.add_pass("ARB waveform download and configuration (slow)")
 
-        check_scpi_errors(sg, "Signal Generator", results)
+            check_scpi_errors(sg, "Signal Generator", results)
+
+            # Stop ARB playback
+            arb_gen.stop()
+
+        except Exception as e:
+            results.add_fail("ARB functionality test", f"Error: {e}")
+            check_scpi_errors(sg, "Signal Generator", results)
 
         # Clean up - turn off RF output
         sg.write(':OUTPUT:STATE OFF')
