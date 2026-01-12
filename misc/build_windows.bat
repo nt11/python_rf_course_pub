@@ -84,7 +84,7 @@ if errorlevel 1 (
 echo.
 
 REM Check if executable was created
-if exist "dist\test_setup.exe" (
+if exist dist\test_setup.exe (
     echo ============================================================================
     echo BUILD SUCCESSFUL!
     echo ============================================================================
@@ -92,13 +92,16 @@ if exist "dist\test_setup.exe" (
     echo Executable location: dist\test_setup.exe
     echo.
     echo File size:
-    dir dist\test_setup.exe | find "test_setup.exe"
+    for %%I in (dist\test_setup.exe) do echo   %%~zI bytes ^(~%%~zI bytes^)
     echo.
     echo You can now:
     echo   1. Run the executable: dist\test_setup.exe
-    echo   2. Copy it to another Windows machine (no Python needed)
+    echo   2. Copy it to another Windows machine ^(no Python needed^)
     echo   3. Distribute it to users
     echo.
+    echo BUILD COMPLETED SUCCESSFULLY!
+    echo.
+    set BUILD_SUCCESS=1
 ) else (
     echo ============================================================================
     echo BUILD FAILED - Executable not found
@@ -107,6 +110,19 @@ if exist "dist\test_setup.exe" (
     echo The build process completed but the executable was not created.
     echo Check the PyInstaller output above for errors.
     echo.
+    set BUILD_SUCCESS=0
+)
+
+if "%BUILD_SUCCESS%"=="1" (
+    echo.
+    echo ============================================================================
+    echo Ready to distribute!
+    echo ============================================================================
+) else (
+    echo.
+    echo ============================================================================
+    echo Please review errors and try again
+    echo ============================================================================
 )
 
 echo Press any key to exit...
