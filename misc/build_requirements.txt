@@ -1,0 +1,27 @@
+# Build Requirements for test_setup.py Windows Executable
+# Install these in the build environment before running PyInstaller
+
+# PyInstaller - executable builder
+pyinstaller>=6.0.0
+pyinstaller-hooks-contrib>=2025.9
+
+# Runtime Dependencies (will be bundled into the executable)
+# These must be installed so PyInstaller can find and bundle them
+
+# VISA communication
+PyVISA==1.15.0
+PyVISA-py==0.8.1
+socketscpi==2025.2.0
+
+# ARB waveform tools
+pyarbtools==2025.6.1
+
+# Data processing
+numpy==2.3.4
+
+# Additional dependencies for proper functioning
+typing_extensions==4.15.0
+pyparsing==3.2.5
+
+# Windows-specific (conditional, PyInstaller handles this)
+pywin32-ctypes==0.2.3

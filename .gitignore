@@ -30,3 +30,8 @@
 /Exercises/workshop/solution/build/
 /Exercises/workshop/solution/dist/
 /Exercises/workshop/solution/pa_app_solution.spec
+/misc/build/
+/misc/dist/
+/misc/build_env/
+/misc/__pycache__/
+/misc/*.pyc
