@@ -349,14 +349,27 @@ def main():
     sg = test_signal_generator(sg_ip, results)
     sa = test_spectrum_analyzer(sa_ip, results)
 
-    # Clean up
+    # Clean up - Reset instruments to default state
+    print("\n" + "="*60)
+    print("CLEANUP - Resetting instruments")
+    print("="*60)
     try:
         if sg:
+            print("Resetting Signal Generator...")
+            sg.write('*RST')
+            sg.query('*OPC?')
+            sg.write('*CLS')
             sg.close()
+            print("  ✓ Signal Generator reset and closed")
         if sa:
+            print("Resetting Spectrum Analyzer...")
+            sa.write('*RST')
+            sa.query('*OPC?')
+            sa.write('*CLS')
             sa.close()
-    except:
-        pass
+            print("  ✓ Spectrum Analyzer reset and closed")
+    except Exception as e:
+        print(f"  ⚠ Warning during cleanup: {e}")
 
     # Print summary
     print("\n" + "="*60)
