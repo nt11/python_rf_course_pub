@@ -25,6 +25,9 @@ hidden_imports = [
     'pyvisa_py.serial',
     'pyvisa_py.usb',
     'pyvisa_py.gpib',
+    'pyvisa_py.sessions',
+    'pyvisa_py.common',
+    'pyvisa_py.highlevel',
     'pyvisa.ctwrapper',
     'pyvisa.ctwrapper.functions',
     'pyvisa.ctwrapper.highlevel',
@@ -34,6 +37,11 @@ hidden_imports = [
     'pyarbtools.communications',
     'pyarbtools.error',
     'pyarbtools.wfmBuilder',
+    'pyarbtools.gui',
+    'tkinter',
+    'tkinter.filedialog',
+    'tkinter.messagebox',
+    '_tkinter',
     'numpy',
     'numpy.core',
     'numpy.core._methods',
@@ -73,16 +81,15 @@ a = Analysis(
     hooksconfig={},
     runtime_hooks=[],
     excludes=[
-        # Exclude GUI frameworks we don't need
-        'tkinter',
+        # NOTE: tkinter is required by pyarbtools.gui
         # NOTE: matplotlib, PIL, and scipy are required by pyarbtools.wfmBuilder
+        # Exclude GUI frameworks we don't use
         'PyQt5',
         'PyQt6',
         'PySide2',
         'PySide6',
         # Exclude other large packages we don't use
         'pandas',
-        # scipy is needed by pyarbtools.wfmBuilder
         'IPython',
         'jupyter',
         'notebook',
