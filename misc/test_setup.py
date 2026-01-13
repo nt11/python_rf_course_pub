@@ -14,6 +14,23 @@ import numpy as np
 import time
 from typing import Tuple, Optional
 import pyarbtools as arb
+import sys
+from datetime import datetime
+
+
+class TeeOutput:
+    """Redirects output to both console and log file"""
+    def __init__(self, log_file):
+        self.terminal = sys.stdout
+        self.log = log_file
+
+    def write(self, message):
+        self.terminal.write(message)
+        self.log.write(message)
+
+    def flush(self):
+        self.terminal.flush()
+        self.log.flush()
 
 
 class TestResult:
@@ -324,76 +341,101 @@ def test_spectrum_analyzer(sa_ip: str, results: TestResult) -> Optional[object]:
 
 def main():
     """Main test routine"""
-    print("="*60)
-    print("RF MEASUREMENT SETUP TEST")
-    print("="*60)
-    print("\nThis script will test the connectivity and basic")
-    print("functionality of your Signal Generator and Spectrum Analyzer.")
-    print()
+    # Create log file with date in filename
+    date_str = datetime.now().strftime("%Y_%m_%d")
+    log_filename = f"test_setup__{date_str}.txt"
+    log_file = open(log_filename, 'w', encoding='utf-8')
 
-    # Get IP addresses from user
-    sg_ip = input("Enter Signal Generator IP address: ").strip()
-    sa_ip = input("Enter Spectrum Analyzer IP address: ").strip()
+    # Redirect stdout to both console and log file
+    original_stdout = sys.stdout
+    sys.stdout = TeeOutput(log_file)
 
-    if not sg_ip or not sa_ip:
-        print("\nError: Both IP addresses are required!")
-        return
-
-    print(f"\nSignal Generator: {sg_ip}")
-    print(f"Spectrum Analyzer: {sa_ip}")
-
-    # Initialize test results
-    results = TestResult()
-
-    # Test instruments
-    sg = test_signal_generator(sg_ip, results)
-    sa = test_spectrum_analyzer(sa_ip, results)
-
-    # Clean up - Reset instruments to default state
-    print("\n" + "="*60)
-    print("CLEANUP - Resetting instruments")
-    print("="*60)
     try:
-        if sg:
-            print("Resetting Signal Generator...")
-            sg.write('*RST')
-            sg.query('*OPC?')
-            sg.write('*CLS')
-            sg.close()
-            print("  ✓ Signal Generator reset and closed")
-        if sa:
-            print("Resetting Spectrum Analyzer...")
-            sa.write('*RST')
-            sa.query('*OPC?')
-            sa.write('*CLS')
-            sa.close()
-            print("  ✓ Spectrum Analyzer reset and closed")
-    except Exception as e:
-        print(f"  ⚠ Warning during cleanup: {e}")
+        print("="*60)
+        print("RF MEASUREMENT SETUP TEST")
+        print("="*60)
+        print(f"\nLog file: {log_filename}")
+        print("\nThis script will test the connectivity and basic")
+        print("functionality of your Signal Generator and Spectrum Analyzer.")
+        print()
 
-    # Print summary
-    print("\n" + "="*60)
-    print("TEST SUMMARY")
-    print("="*60)
-    print(f"\nTests Passed: {len(results.tests_passed)}")
-    print(f"Tests Failed: {len(results.tests_failed)}")
-    print(f"Warnings: {len(results.warnings)}")
+        # Get IP addresses from user
+        # Note: input() needs special handling with redirected stdout
+        sys.stdout = original_stdout
+        sg_ip = input("Enter Signal Generator IP address: ").strip()
+        sa_ip = input("Enter Spectrum Analyzer IP address: ").strip()
+        sys.stdout = TeeOutput(log_file)
 
-    if results.tests_failed:
-        print("\n❌ Failed Tests:")
-        for failure in results.tests_failed:
-            print(f"  - {failure}")
+        if not sg_ip or not sa_ip:
+            print("\nError: Both IP addresses are required!")
+            return
 
-    if results.warnings:
-        print("\n⚠️  Warnings:")
-        for warning in results.warnings:
-            print(f"  - {warning}")
+        print(f"\nSignal Generator: {sg_ip}")
+        print(f"Spectrum Analyzer: {sa_ip}")
 
-    # Final verdict
-    print("\n" + "="*60)
-    print("VERDICT")
-    print("="*60)
-    print(f"\n{results.get_verdict()}\n")
+        # Initialize test results
+        results = TestResult()
+
+        # Test instruments
+        sg = test_signal_generator(sg_ip, results)
+        sa = test_spectrum_analyzer(sa_ip, results)
+
+        # Clean up - Reset instruments to default state
+        print("\n" + "="*60)
+        print("CLEANUP - Resetting instruments")
+        print("="*60)
+        try:
+            if sg:
+                print("Resetting Signal Generator...")
+                sg.write('*RST')
+                sg.query('*OPC?')
+                sg.write('*CLS')
+                sg.close()
+                print("  ✓ Signal Generator reset and closed")
+            if sa:
+                print("Resetting Spectrum Analyzer...")
+                sa.write('*RST')
+                sa.query('*OPC?')
+                sa.write('*CLS')
+                sa.close()
+                print("  ✓ Spectrum Analyzer reset and closed")
+        except Exception as e:
+            print(f"  ⚠ Warning during cleanup: {e}")
+
+        # Print summary
+        print("\n" + "="*60)
+        print("TEST SUMMARY")
+        print("="*60)
+        print(f"\nTests Passed: {len(results.tests_passed)}")
+        print(f"Tests Failed: {len(results.tests_failed)}")
+        print(f"Warnings: {len(results.warnings)}")
+
+        if results.tests_failed:
+            print("\n❌ Failed Tests:")
+            for failure in results.tests_failed:
+                print(f"  - {failure}")
+
+        if results.warnings:
+            print("\n⚠️  Warnings:")
+            for warning in results.warnings:
+                print(f"  - {warning}")
+
+        # Final verdict
+        print("\n" + "="*60)
+        print("VERDICT")
+        print("="*60)
+        print(f"\n{results.get_verdict()}\n")
+
+        # Wait for user acknowledgment before exit
+        print("="*60)
+        sys.stdout = original_stdout
+        input("\nPress Enter to exit...")
+
+    finally:
+        # Restore original stdout and close log file
+        sys.stdout = original_stdout
+        log_file.close()
+        print(f"\nLog file saved: {log_filename}")
 
 
 if __name__ == "__main__":
