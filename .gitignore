@@ -35,3 +35,5 @@
 /misc/build_env/
 /misc/__pycache__/
 /misc/*.pyc
+/misc/VERSION.txt
+VERSION.txt

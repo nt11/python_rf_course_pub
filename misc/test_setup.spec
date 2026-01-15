@@ -68,6 +68,11 @@ hidden_imports = list(set(hidden_imports))
 # Combine all data files
 datas = pyvisa_datas + pyvisa_py_datas + pyarbtools_datas
 
+# Filter out VERSION.txt and other sensitive files from datas
+# datas is a list of tuples: (source_path, destination_path)
+datas = [(src, dst) for src, dst in datas
+         if not any(pattern in src.lower() for pattern in ['version.txt', 'version.md', 'credentials', 'secrets', '.env'])]
+
 # Combine all binaries
 binaries = pyvisa_binaries + pyvisa_py_binaries + pyarbtools_binaries
 
