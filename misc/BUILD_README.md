@@ -30,7 +30,9 @@ The build system creates a single executable file (`test_setup.exe`) that can ru
 
 ## Quick Start
 
-### Method 1: Automated Build (Recommended)
+### For Windows
+
+#### Method 1: Automated Build (Recommended)
 
 1. Open Command Prompt or PowerShell
 2. Navigate to the `misc` directory:
@@ -44,7 +46,7 @@ The build system creates a single executable file (`test_setup.exe`) that can ru
 4. Wait for the build to complete (5-10 minutes on first run)
 5. Find your executable at: `dist\test_setup.exe`
 
-### Method 2: Manual Build
+#### Method 2: Manual Build
 
 If you prefer to build manually or need more control:
 
@@ -70,15 +72,69 @@ If you prefer to build manually or need more control:
 
 5. Find the executable in `dist\test_setup.exe`
 
+### For Linux
+
+#### Method 1: Automated Build (Recommended)
+
+1. Open a terminal
+2. Navigate to the `misc` directory:
+   ```bash
+   cd /path/to/python_rf_course_pub/misc
+   ```
+3. Run the build script:
+   ```bash
+   ./build_linux.sh
+   ```
+4. Wait for the build to complete (5-10 minutes on first run)
+5. Find your executable at: `dist/test_setup`
+
+#### Method 2: Manual Build
+
+If you prefer to build manually or need more control:
+
+1. Create a virtual environment:
+   ```bash
+   python3 -m venv build_env
+   ```
+
+2. Activate the virtual environment:
+   ```bash
+   source build_env/bin/activate
+   ```
+
+3. Install build requirements:
+   ```bash
+   pip install -r build_requirements.txt
+   ```
+
+4. Run PyInstaller:
+   ```bash
+   pyinstaller --clean test_setup.spec
+   ```
+
+5. Find the executable in `dist/test_setup`
+
 ## Build Output
 
 After a successful build, you'll find:
 
+**Windows:**
 ```
 misc/
 ├── build/              (Temporary build files - can be deleted)
 ├── dist/
 │   └── test_setup.exe  (Your standalone executable!)
+├── build_env/          (Virtual environment - can be deleted after build)
+├── VERSION.txt         (Build tracking file - auto-generated)
+└── ...
+```
+
+**Linux:**
+```
+misc/
+├── build/              (Temporary build files - can be deleted)
+├── dist/
+│   └── test_setup      (Your standalone executable!)
 ├── build_env/          (Virtual environment - can be deleted after build)
 ├── VERSION.txt         (Build tracking file - auto-generated)
 └── ...
