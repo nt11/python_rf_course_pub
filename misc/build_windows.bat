@@ -90,6 +90,15 @@ if errorlevel 1 (
     echo WARNING: Could not generate VERSION.txt
 ) else (
     echo VERSION.txt created successfully
+
+    REM Redact any encryption keys (hex strings) from VERSION.txt
+    echo Redacting encryption keys...
+    powershell -Command "$content = Get-Content 'VERSION.txt' -Raw; $content = $content -replace '([Kk]ey[:\s]+)[0-9a-fA-F]{16,}', '$1[REDACTED]'; $content = $content -replace '([0-9a-fA-F]{32,})', '[REDACTED]'; $content | Out-File -FilePath 'VERSION.txt' -Encoding UTF8 -NoNewline"
+    if errorlevel 1 (
+        echo WARNING: Could not redact keys from VERSION.txt
+    ) else (
+        echo Keys successfully redacted from VERSION.txt
+    )
 )
 echo.
 
