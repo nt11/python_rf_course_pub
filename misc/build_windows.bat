@@ -63,7 +63,7 @@ if errorlevel 1 (
 echo.
 
 REM Clean previous build
-echo [5/6] Cleaning previous build artifacts...
+echo [5/7] Cleaning previous build artifacts...
 if exist "build" rmdir /s /q build
 if exist "dist" rmdir /s /q dist
 if exist "__pycache__" rmdir /s /q __pycache__
@@ -71,7 +71,7 @@ echo Clean complete
 echo.
 
 REM Build the executable
-echo [6/6] Building executable with PyInstaller...
+echo [6/7] Building executable with PyInstaller...
 echo This will take several minutes...
 pyinstaller --clean test_setup.spec
 if errorlevel 1 (
@@ -80,6 +80,16 @@ if errorlevel 1 (
     echo Check the output above for error details
     pause
     exit /b 1
+)
+echo.
+
+REM Generate VERSION.txt (without keys)
+echo [7/7] Generating VERSION.txt...
+powershell -Command "$date = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'; $host_name = $env:COMPUTERNAME; $user = $env:USERNAME; $pyinstaller_ver = (pyinstaller --version 2>&1 | Select-String -Pattern '\d+\.\d+' | ForEach-Object { $_.Matches.Value } | Select-Object -First 1); $python_ver = (python --version 2>&1); $content = Get-Content 'VERSION.txt.template' -Raw; $content = $content -replace '\{BUILD_DATE\}', $date; $content = $content -replace '\{BUILD_HOST\}', $host_name; $content = $content -replace '\{BUILDER\}', $user; $content = $content -replace '\{PYINSTALLER_VERSION\}', $pyinstaller_ver; $content = $content -replace '\{PYTHON_VERSION\}', $python_ver; $content | Out-File -FilePath 'VERSION.txt' -Encoding UTF8 -NoNewline"
+if errorlevel 1 (
+    echo WARNING: Could not generate VERSION.txt
+) else (
+    echo VERSION.txt created successfully
 )
 echo.
 

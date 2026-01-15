@@ -1,0 +1,30 @@
+RF Measurement Setup Test - Standalone Executable
+═══════════════════════════════════════════════════
+
+Build Date: {BUILD_DATE}
+Build Host: {BUILD_HOST}
+Builder: {BUILDER}
+
+Components:
+- test_setup.exe: RF instrument connectivity and functionality test
+
+Build Details:
+- PyInstaller: {PYINSTALLER_VERSION}
+- Python: {PYTHON_VERSION}
+- Platform: Windows
+- Architecture: x64
+
+Dependencies:
+- PyVISA: 1.15.0
+- PyVISA-py: 0.8.1
+- pyarbtools: 2025.6.1
+- numpy: 2.3.4
+- scipy: 1.16.3
+- matplotlib: 3.10.7
+- socketscpi: 2025.2.0
+
+Encryption Keys:
+- [REDACTED] - Keys embedded in executable for security
+
+Note: Keep this file for build tracking purposes only.
+All runtime configuration (IP addresses) is provided by user input.

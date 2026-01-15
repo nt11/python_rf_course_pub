@@ -12,7 +12,9 @@ The build system creates a single executable file (`test_setup.exe`) that can ru
 - **`test_setup.spec`** - PyInstaller specification file with all build configuration
 - **`build_requirements.txt`** - Python packages needed for the build process
 - **`build_windows.bat`** - Automated build script for Windows
+- **`VERSION.txt.template`** - Template for build tracking file (keys redacted)
 - **`BUILD_README.md`** - This file
+- **`VERSION.txt`** - Auto-generated during build (excluded from git)
 
 ## Prerequisites
 
@@ -78,8 +80,29 @@ misc/
 ├── dist/
 │   └── test_setup.exe  (Your standalone executable!)
 ├── build_env/          (Virtual environment - can be deleted after build)
+├── VERSION.txt         (Build tracking file - auto-generated)
 └── ...
 ```
+
+## Build Tracking (VERSION.txt)
+
+The build process automatically generates a `VERSION.txt` file for tracking build information:
+
+**What's included:**
+- Build date and time
+- Build machine hostname and username
+- PyInstaller and Python versions
+- All dependency versions
+- Build configuration details
+
+**Security Note:**
+- The VERSION.txt file does NOT contain any encryption keys or sensitive credentials
+- All sensitive information is marked as `[REDACTED]` in the generated file
+- The file is excluded from git commits (.gitignore) to prevent accidental exposure
+- Keys (if any) are embedded directly in the executable, not stored in VERSION.txt
+
+**Template:**
+The `VERSION.txt.template` file defines the format. The build script fills in build metadata automatically while keeping sensitive fields redacted for security.
 
 ## Using the Executable
 
